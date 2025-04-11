@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Xsythoo_</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
   
@@ -103,22 +105,24 @@
           transform: translateY(0);
         }
   
-        /* Kupal Message */
-        .kupal-message {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          color: white;
-          padding: 20px 30px;
-          border-radius: 10px;
-          font-size: 24px;
-          font-weight: bold;
-          z-index: 10000;
-          opacity: 0;
-          pointer-events: none;
-          transition: opacity 0.3s ease;
-        }
+/* Kupal Message */
+.kupal-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  font-family: 'Creepster', cursive; /* Scary font */
+}
+
   
         .kupal-message.show {
           opacity: 1;
@@ -384,78 +388,94 @@
           background-color: rgba(30, 30, 60, 0.9);
         }
   
-        /* Music Control Button */
-        .music-control {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          background-color: rgba(30, 30, 30, 0.9);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-          transition: all 0.3s ease;
-          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4),
-            0 4px 15px rgba(0, 0, 0, 0.6);
-          animation: pulseShadow 2s infinite;
-        }
-  
-        .music-control:hover {
-          transform: scale(1.1);
-          animation: pulseShadowHover 1s infinite;
-        }
-  
-        .music-control i {
-          color: white;
-          font-size: 20px;
-          transition: transform 0.3s ease;
-        }
-  
-        .music-control:hover i {
-          transform: scale(1.1);
-        }
-  
-        @keyframes pulseShadow {
-          0% {
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4),
-              0 4px 15px rgba(0, 0, 0, 0.6);
-          }
-          70% {
-            box-shadow: 0 0 0 10px rgba(255, 255, 255, 0),
-              0 4px 15px rgba(0, 0, 0, 0.6);
-          }
-          100% {
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
-              0 4px 15px rgba(0, 0, 0, 0.6);
-          }
-        }
-  
-        @keyframes pulseShadowHover {
-          0% {
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6),
-              0 6px 20px rgba(255, 255, 255, 0.2);
-          }
-          70% {
-            box-shadow: 0 0 0 15px rgba(255, 255, 255, 0),
-              0 6px 20px rgba(255, 255, 255, 0.2);
-          }
-          100% {
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
-              0 6px 20px rgba(255, 255, 255, 0.2);
-          }
-        }
-  
-        .music-control.playing {
-          animation: pulseShadow 2s infinite;
-        }
-  
-        .music-control.playing:hover {
-          animation: pulseShadowHover 1s infinite;
-        }
+    /* Music Control Button */
+.music-control {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4),
+    0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.music-control:hover {
+  transform: scale(1.1);
+}
+
+.music-control i {
+  color: white;
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.music-control:hover i {
+  transform: scale(1.1);
+}
+
+/* Heartbeat animation when music is playing */
+.music-control.playing {
+  animation: heartbeat 1.5s infinite ease-in-out;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+  25% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.2),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+  50% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+  75% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.2),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Hover state when music is playing */
+.music-control.playing:hover {
+  animation: heartbeatHover 1s infinite ease-in-out;
+}
+
+@keyframes heartbeatHover {
+  0% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6),
+      0 6px 20px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0),
+      0 6px 20px rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
+      0 6px 20px rgba(255, 255, 255, 0.2);
+  }
+}
   
         /* Glow Pulse for Music Control */
         .glow-pulse {
@@ -485,12 +505,12 @@
         }
   
         .status-container {
-          background-color: rgba(20, 20, 20, 0.97);
+          background-color: rgba(20, 20, 20, 0.7);
           border-radius: 12px;
           width: 100%;
-          max-width: 340px;
+          max-width: 500px;
           overflow: hidden;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
           border: 1px solid rgba(255, 255, 255, 0.1);
           position: relative;
           z-index: 10;
@@ -498,6 +518,7 @@
           opacity: 0;
           transition: transform 0.5s ease, opacity 0.5s ease;
           margin: 20px;
+          backdrop-filter: blur(10px);
         }
   
         .status-container.visible {
@@ -518,35 +539,52 @@
           text-align: center;
         }
   
-        .avatar-container {
-          position: relative;
-          margin-bottom: 15px;
-        }
-  
-        .avatar {
-          width: 90px;
-          height: 90px;
-          border-radius: 50%;
-          object-fit: cover;
-          border: 5px solid #1a1a1a;
-          filter: grayscale(100%);
-          transition: all 0.3s ease;
-        }
-  
-        .avatar:hover {
-          transform: scale(1.05);
-          box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        }
+          /* Add this to your existing CSS */
+          .avatar-container {
+    position: relative;
+    margin-bottom: 15px;
+  }
+
+  .avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid rgba(26, 26, 26, 0.7);
+    filter: grayscale(100%);
+    transition: all 0.3s ease;
+    position: relative;
+    animation: borderBeat 1.5s infinite ease-out;
+  }
+
+  /* Continuous border pulse effect */
+  @keyframes borderBeat {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+  }
+
+  .avatar:hover {
+    transform: scale(1.05);
+    filter: grayscale(0%);
+  }
   
         .status-indicator {
           position: absolute;
-          bottom: 5px;
-          right: 5px;
+          bottom: 11px;
+          right: 12px;
           width: 16px;
           height: 16px;
           border-radius: 50%;
           background-color: #f04747;
-          border: 3px solid #1a1a1a;
+          border: 3px solid rgba(26, 26, 26, 0.7);
+          z-index: 2;
         }
   
         .username {
@@ -658,7 +696,7 @@
         }
   
         .spotify-section {
-          background-color: rgba(30, 30, 30, 0.8);
+          background-color: rgba(30, 30, 30, 0.6);
           padding: 15px;
           border-radius: 8px;
           margin: 0 15px 15px;
@@ -760,7 +798,7 @@
         }
   
         .activities-section {
-          background-color: rgba(30, 30, 30, 0.8);
+          background-color: rgba(30, 30, 30, 0.6);
           padding: 15px;
           border-radius: 8px;
           margin: 0 15px 15px;
@@ -849,23 +887,95 @@
           justify-content: center;
           padding: 20px;
           gap: 25px;
-          background-color: rgba(25, 25, 25, 0.7);
+          background-color: rgba(25, 25, 25, 0.6);
         }
   
         .footer-icon {
           color: #ffffff;
-          font-size: 22px;
+          font-size: 28px; /* Larger icons */
           transition: all 0.3s ease;
-          min-width: 30px;
-          min-height: 30px;
+          min-width: 40px; /* Larger hit area */
+          min-height: 40px;
           display: flex;
           align-items: center;
           justify-content: center;
+          position: relative;
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+  
+        /* YouTube Icon */
+        .footer-icon.fa-youtube {
+          color: #ff0000;
+          animation: youtubePulse 2s infinite;
+        }
+  
+        @keyframes youtubePulse {
+          0% {
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+          }
+          50% {
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.9);
+          }
+          100% {
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+          }
+        }
+  
+        /* TikTok Icon */
+        .footer-icon.fa-tiktok {
+          color: #00f2ea;
+          text-shadow: 0 0 10px rgba(0, 242, 234, 0.7);
+          animation: tiktokShake 0.5s infinite alternate;
+        }
+  
+        @keyframes tiktokShake {
+          0% {
+            transform: rotate(-5deg);
+          }
+          100% {
+            transform: rotate(5deg);
+          }
+        }
+  
+        /* Kick Icon (gamepad) */
+        .footer-icon.fa-gamepad {
+          color: #53fc18;
+          text-shadow: 0 0 10px rgba(83, 252, 24, 0.7);
+          animation: gamepadBounce 0.8s infinite alternate;
+        }
+  
+        @keyframes gamepadBounce {
+          0% {
+            transform: translateY(0);
+          }
+          100% {
+            transform: translateY(-5px);
+          }
         }
   
         .footer-icon:hover {
-          transform: translateY(-5px);
-          text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+          transform: translateY(-5px) scale(1.1);
+        }
+  
+        /* Glow effect on hover */
+        .footer-icon::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+  
+        .footer-icon:hover::after {
+          opacity: 1;
         }
   
         .empty-activities {
@@ -887,8 +997,8 @@
           }
   
           .avatar {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
           }
   
           .username {
@@ -901,7 +1011,9 @@
           }
   
           .footer-icon {
-            font-size: 20px;
+            font-size: 24px;
+            min-width: 36px;
+            min-height: 36px;
           }
   
           .loading-logo {
@@ -941,8 +1053,8 @@
           }
   
           .avatar {
-            width: 70px;
-            height: 70px;
+            width: 90px;
+            height: 90px;
           }
   
           .username {
@@ -963,7 +1075,9 @@
           }
   
           .footer-icon {
-            font-size: 18px;
+            font-size: 20px;
+            min-width: 32px;
+            min-height: 32px;
           }
   
           .loading-logo {
@@ -1106,6 +1220,7 @@
     font-size: 12px;
   }
 }
+
       </style>
     </style>
     <link
@@ -1602,48 +1717,46 @@
       }
 
       function updateMusicButton() {
-        if (!musicIcon || !musicControl) return;
+  if (!musicIcon || !musicControl) return;
 
-        if (musicPlaying) {
-          musicIcon.className = "fas fa-volume-up";
-          musicIcon.style.animation = "pulse 2s infinite alternate";
-          musicControl.classList.add("playing");
-        } else {
-          musicIcon.className = "fas fa-volume-mute";
-          musicIcon.style.animation = "none";
-          musicControl.classList.remove("playing");
-        }
-      }
+  if (musicPlaying) {
+    musicIcon.className = "fas fa-volume-up";
+    musicControl.classList.add("playing");
+  } else {
+    musicIcon.className = "fas fa-volume-mute";
+    musicControl.classList.remove("playing");
+  }
+}
 
-      function toggleMusic() {
-        if (!backgroundMusic || !musicControl) return;
+function toggleMusic() {
+  if (!backgroundMusic || !musicControl) return;
 
-        if (musicPlaying) {
-          fadeVolume(backgroundMusic.volume, 0, () => {
-            backgroundMusic.pause();
-            musicPlaying = false;
-            updateMusicButton();
-          });
-        } else {
-          const playPromise = backgroundMusic.play();
+  if (musicPlaying) {
+    fadeVolume(backgroundMusic.volume, 0, () => {
+      backgroundMusic.pause();
+      musicPlaying = false;
+      updateMusicButton();
+    });
+  } else {
+    const playPromise = backgroundMusic.play();
 
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => {
-                musicPlaying = true;
-                updateMusicButton();
-                fadeVolume(0, 0.5);
-              })
-              .catch((error) => {
-                console.error("Audio playback failed:", error);
-                musicControl.title = "Click again to enable audio";
-                setTimeout(() => {
-                  musicControl.title = "";
-                }, 3000);
-              });
-          }
-        }
-      }
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          musicPlaying = true;
+          updateMusicButton();
+          fadeVolume(0, 0.5);
+        })
+        .catch((error) => {
+          console.error("Audio playback failed:", error);
+          musicControl.title = "Click again to enable audio";
+          setTimeout(() => {
+            musicControl.title = "";
+          }, 3000);
+        });
+    }
+  }
+}
 
       function setupMusicControl() {
         if (!backgroundMusic || !musicControl || !musicIcon) return;
