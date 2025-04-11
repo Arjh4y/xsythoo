@@ -1503,6 +1503,30 @@ html, body {
   }
 }
 
+/* For touch devices - completely hide the custom cursor */
+@media (pointer: coarse), (hover: none) {
+  /* Hide custom cursor on touch devices */
+  .custom-cursor {
+    display: none !important;
+  }
+  
+  /* Reset cursor styles for touch devices */
+  body {
+    cursor: auto !important;
+  }
+  
+  a, button, .music-control, .footer-icon, .avatar, .badge {
+    cursor: pointer !important;
+  }
+  
+  /* Disable cursor-related animations and effects */
+  .cursor-snowflake, 
+  .custom-cursor::before, 
+  .custom-cursor::after {
+    display: none !important;
+  }
+}
+
 /* Specifically target mobile and tablet devices using max-width */
 @media (max-width: 1024px) {
   .custom-cursor {
@@ -1515,28 +1539,6 @@ html, body {
   
   a, button, .music-control, .footer-icon, .avatar, .badge {
     cursor: pointer !important;
-  }
-}
-
-/* Ensure desktop screens still use the custom cursor */
-@media (pointer: fine) and (min-width: 1025px) {
-  .custom-cursor {
-    display: block;
-  }
-  
-  body, a, button, .music-control, .footer-icon, .avatar, .badge {
-    cursor: none;
-  }
-}
-
-/* Also hide all cursor trail effects on mobile/touch devices */
-@media (pointer: coarse), (hover: none), (max-width: 1024px) {
-  .click-particle,
-  .heart,
-  .ripple,
-  .cursor-snowflake,
-  .glow-pulse {
-    display: none !important;
   }
 }
 
@@ -1847,7 +1849,7 @@ document.querySelectorAll('.footer a').forEach(link => {
 });
       // Custom Cursor Movement
       function setupCustomCursor() {
-        if (!customCursor) return;
+        if (!customCursor || isTouchDevice()) return;
 
         document.addEventListener("mousemove", (e) => {
           customCursor.style.left = `${e.clientX}px`;
@@ -2630,6 +2632,31 @@ function updateViewCounter() {
   // Update displayed view count
   viewCountElement.textContent = viewCount.toLocaleString();
 }
+
+
+// Detect touch devices and remove cursor-related functionality
+function isTouchDevice() {
+  return ('ontouchstart' in window) || 
+         (navigator.maxTouchPoints > 0) || 
+         (navigator.msMaxTouchPoints > 0);
+}
+
+// Early detection to prevent cursor-related setup on mobile
+document.addEventListener('DOMContentLoaded', () => {
+  if (isTouchDevice()) {
+    // Remove cursor-related elements if they exist
+    const cursor = document.getElementById('customCursor');
+    if (cursor) cursor.style.display = 'none';
+    
+    // Reset cursor styles
+    document.body.style.cursor = 'auto';
+    
+    // Disable cursor-related event listeners
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('click', handleClickEffects);
+    // Add any other cursor-related event listeners you want to remove
+  }
+});
     </script>
   </body>
 </html>
