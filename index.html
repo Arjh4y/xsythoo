@@ -1458,6 +1458,88 @@ html, body {
 }
 
 
+      /* For touch devices - completely hide the custom cursor */
+@media (pointer: coarse), (hover: none) {
+  /* Hide custom cursor on touch devices */
+  .custom-cursor {
+    display: none !important;
+  }
+  
+  /* Reset cursor styles for touch devices */
+  body {
+    cursor: auto !important;
+  }
+  
+  a, button, .music-control, .footer-icon, .avatar, .badge {
+    cursor: pointer !important;
+  }
+  
+  /* Disable cursor-related animations and effects */
+  .cursor-snowflake, 
+  .custom-cursor::before, 
+  .custom-cursor::after {
+    display: none !important;
+  }
+  
+  /* Ensure all interactive elements have proper touch feedback */
+  .footer-icon:active, 
+  .badge:active, 
+  .avatar:active,
+  .music-control:active,
+  .enter-button:active {
+    opacity: 0.7;
+    transform: scale(0.92) !important;
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+  }
+  
+  /* Prevent hover effects that depend on cursor */
+  .custom-cursor.interactive::before {
+    animation: none !important;
+  }
+  
+  /* Increase touch targets for better usability */
+  .badge, .footer-icon, .music-control, .enter-button {
+    padding: 5px;
+  }
+}
+
+/* Specifically target mobile and tablet devices using max-width */
+@media (max-width: 1024px) {
+  .custom-cursor {
+    display: none !important;
+  }
+  
+  body {
+    cursor: auto !important;
+  }
+  
+  a, button, .music-control, .footer-icon, .avatar, .badge {
+    cursor: pointer !important;
+  }
+}
+
+/* Ensure desktop screens still use the custom cursor */
+@media (pointer: fine) and (min-width: 1025px) {
+  .custom-cursor {
+    display: block;
+  }
+  
+  body, a, button, .music-control, .footer-icon, .avatar, .badge {
+    cursor: none;
+  }
+}
+
+/* Also hide all cursor trail effects on mobile/touch devices */
+@media (pointer: coarse), (hover: none), (max-width: 1024px) {
+  .click-particle,
+  .heart,
+  .ripple,
+  .cursor-snowflake,
+  .glow-pulse {
+    display: none !important;
+  }
+}
+
 
       </style>
     </style>
