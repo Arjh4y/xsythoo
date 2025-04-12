@@ -7,7 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
     <link rel="icon" type="image/x-icon" href="pfp.png">
-
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   
     <style>
@@ -1768,6 +1769,62 @@ html, body {
     </div>
 
     <script>
+
+// Firebase Initialization (place this at the top of your script, before DOMContentLoaded)
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IbZ7nPpDgQYfgwaHPHMJDvnc-skYVUs",
+  authDomain: "realtime-view-counter-39162.firebaseapp.com",
+  databaseURL: "https://realtime-view-counter-39162-default-rtdb.firebaseio.com",
+  projectId: "realtime-view-counter-39162",
+  storageBucket: "realtime-view-counter-39162.firebasestorage.app",
+  messagingSenderId: "1078924563985",
+  appId: "1:1078924563985:web:6fa7bc137190bd521b83b0"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Enhanced View Counter
+function setupViewCounter() {
+  const viewCountElement = document.getElementById('viewCount');
+  if (!viewCountElement) return;
+
+  // Show loading state
+  viewCountElement.textContent = '...';
+
+  const counterRef = database.ref('viewCount');
+  
+// Generate a unique visitor ID that lasts for the session
+if (!sessionStorage.getItem('visitorId')) {
+  sessionStorage.setItem('visitorId', Date.now().toString());
+  // Increment counter
+  counterRef.transaction((currentCount) => {
+    return (currentCount || 0) + 1;
+  });
+}
+
+  // Listen for real-time updates
+  counterRef.on('value', (snapshot) => {
+    const count = snapshot.val();
+    viewCountElement.textContent = count !== null ? count : '0';
+  }, (error) => {
+    console.error('View counter listener error:', error);
+    viewCountElement.textContent = 'Error';
+  });
+}
+
+// Update your DOMContentLoaded event listener to include this:
+document.addEventListener("DOMContentLoaded", () => {
+  // Existing initialization code...
+  
+  // Add this line with your other setup calls
+  setupViewCounter();
+  
+  // Rest of your initialization...
+});
+
+
       const discordId = "968142413040336966";
       let updateInterval;
       let musicPlaying = false;
@@ -1847,6 +1904,7 @@ function createEntranceParticles(x, y) {
 }
 
 // Play Entrance Sound
+// Play Entrance Sound
 function playEntranceSound() {
   const entranceSound = document.getElementById("entranceSound");
   if (entranceSound) {
@@ -1855,8 +1913,8 @@ function playEntranceSound() {
   }
 }
 
-      // Loading Screen Transition - Simplified
-      function setupEnterButton() {
+   // Loading Screen Transition - Simplified
+function setupEnterButton() {
   if (!enterButton) return;
 
   enterButton.addEventListener("click", (e) => {
@@ -1873,9 +1931,12 @@ function playEntranceSound() {
     // Play entrance sound
     playEntranceSound();
 
-    // Play background music if not already playing
+    // IMPORTANT: Play background music ONLY when enter button is clicked
     if (!musicPlaying && backgroundMusic) {
+      // Make sure audio is unmuted before trying to play
+      backgroundMusic.muted = false;
       const playPromise = backgroundMusic.play();
+      
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
@@ -2227,7 +2288,21 @@ document.querySelectorAll('.footer a').forEach(link => {
         requestAnimationFrame(updateVolume);
       }
 
-      function updateMusicButton() {
+      // Initialize music in stopped state
+function initializeAudio() {
+  if (!backgroundMusic) return;
+  
+  // Always start with music completely stopped
+  backgroundMusic.pause();
+  backgroundMusic.currentTime = 0;
+  backgroundMusic.volume = 0.5;
+  backgroundMusic.muted = true; // Start muted to help with autoplay restrictions
+  
+  // Load the audio file but don't play it
+}
+
+
+function updateMusicButton() {
   if (!musicIcon || !musicControl) return;
 
   if (musicPlaying) {
@@ -2238,7 +2313,6 @@ document.querySelectorAll('.footer a').forEach(link => {
     musicControl.classList.remove("playing");
   }
 }
-
 function toggleMusic() {
   if (!backgroundMusic || !musicControl) return;
 
@@ -2269,60 +2343,17 @@ function toggleMusic() {
   }
 }
 
-      function setupMusicControl() {
-        if (!backgroundMusic || !musicControl || !musicIcon) return;
+function setupMusicControl() {
+  if (!backgroundMusic || !musicControl || !musicIcon) return;
 
-        backgroundMusic.volume = 0.5;
-        musicPlaying = false;
-        updateMusicButton();
-
-        attemptAutoplay();
-
-        musicControl.addEventListener("click", toggleMusic);
-
-
-
-        function attemptAutoplay() {
-          const playPromise = backgroundMusic.play();
-
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => {
-                musicPlaying = true;
-                updateMusicButton();
-              })
-              .catch((error) => {
-                console.log("Autoplay blocked:", error);
-                musicControl.style.border = "2px solid #f04747";
-                musicControl.title = "Click to enable audio";
-
-                const enableAudio = () => {
-                  backgroundMusic
-                    .play()
-                    .then(() => {
-                      musicPlaying = true;
-                      updateMusicButton();
-                      musicControl.style.border = "";
-                      musicControl.title = "";
-                    })
-                    .catch((e) => console.log("Still blocked:", e));
-
-                  document.removeEventListener("click", enableAudio);
-                  document.removeEventListener("keydown", enableAudio);
-                  document.removeEventListener("touchstart", enableAudio);
-                };
-
-                document.addEventListener("click", enableAudio, { once: true });
-                document.addEventListener("keydown", enableAudio, {
-                  once: true,
-                });
-                document.addEventListener("touchstart", enableAudio, {
-                  once: true,
-                });
-              });
-          }
-        }
-      }
+  // Set up click listener for the music control button
+  musicControl.addEventListener("click", toggleMusic);
+  
+  // Initialize audio but don't autoplay
+  initializeAudio();
+  musicPlaying = false;
+  updateMusicButton();
+}
 
       // Keyboard Shortcuts
       function setupKeyboardShortcuts() {
@@ -2684,7 +2715,6 @@ document.addEventListener("DOMContentLoaded", () => {
   startUpdateInterval();
   createSnowflakes();
   maintainSnowfall();
-  updateViewCounter();
   animateTabTitle(); // Add this line to start the tab title animation
 
   // Attempt to play media
@@ -2723,24 +2753,7 @@ function animateTabTitle() {
     index = (index + 1) % animations.length;
   }, 600);
 }
-      // View Counter Functionality
-function updateViewCounter() {
-  const viewCountElement = document.getElementById("viewCount");
-  if (!viewCountElement) return;
-
-  // Get current view count from localStorage or initialize to 0
-  let viewCount = parseInt(localStorage.getItem("viewCount")) || 0;
-
-  // Increment view count only on first page load per session
-  if (!sessionStorage.getItem("hasVisited")) {
-    viewCount += 1;
-    localStorage.setItem("viewCount", viewCount);
-    sessionStorage.setItem("hasVisited", "true");
-  }
-
-  // Update displayed view count
-  viewCountElement.textContent = viewCount.toLocaleString();
-}
+    
 
 
 // Detect touch devices and remove cursor-related functionality
@@ -2774,11 +2787,6 @@ function animateBadgeText() {
 
   const phrases = [
     "STALK PA, KUPAL KABA?",
-    "GAME OVER?",
-    "LEVEL UP!",
-    "PLAYER 1 READY",
-    "INSERT COIN",
-    "HIGH SCORE!"
   ];
 
   let currentIndex = 0;
