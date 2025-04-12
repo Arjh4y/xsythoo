@@ -2667,47 +2667,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Initialize Firebase (add your config)
 const firebaseConfig = {
   apiKey: "AIzaSyC78ujpZdXb_4qV7niM5fx-Ocjet8NyjeQ",
   authDomain: "xsythoo.firebaseapp.com",
+  databaseURL: "https://xsythoo-default-rtdb.firebaseio.com", // Keep this
   projectId: "xsythoo",
-  storageBucket: "xsythoo.firebasestorage.app",
+  storageBucket: "xsythoo.appspot.com",
   messagingSenderId: "35680080254",
-  appId: "1:35680080254:web:6d28398c775c6687f0a32f",
-  measurementId: "G-1W813TERZ4"
+  appId: "1:35680080254:web:26ba30b5ccf45558f0a32f",
+  measurementId: "G-VR3P5QC26J"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// Initialize RTDB
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database(); // Changed to database()
 
-// Update view count
 function updateViewCount() {
-  const pagePath = window.location.pathname;
+  const pagePath = window.location.pathname.replace(/\//g, '_'); // Convert path to valid key
+  const ref = db.ref('views/' + pagePath);
   
-  db.collection("views").doc(pagePath).get().then((doc) => {
-    let currentCount = 0;
-    if (doc.exists) {
-      currentCount = doc.data().count || 0;
-    }
-    
-    // Increment count
-    currentCount++;
-    
-    // Update in Firestore
-    db.collection("views").doc(pagePath).set({
-      count: currentCount,
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    // Update display
-    document.getElementById('viewCount').textContent = currentCount;
+  ref.transaction((currentCount) => {
+    return (currentCount || 0) + 1;
+  }).then(() => {
+    console.log("View count updated in RTDB!");
+    document.getElementById('viewCount').textContent = currentCount + 1;
+  }).catch((error) => {
+    console.error("Error updating views:", error);
   });
 }
-
-// Call on page load
-updateViewCount();
     </script>
   </body>
 </html>
