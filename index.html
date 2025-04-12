@@ -2670,7 +2670,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const firebaseConfig = {
   apiKey: "AIzaSyC78ujpZdXb_4qV7niM5fx-Ocjet8NyjeQ",
   authDomain: "xsythoo.firebaseapp.com",
-  databaseURL: "https://xsythoo-default-rtdb.firebaseio.com", // Keep this
+  databaseURL: "https://xsythoo-default-rtdb.firebaseio.com", // Required for RTDB
   projectId: "xsythoo",
   storageBucket: "xsythoo.appspot.com",
   messagingSenderId: "35680080254",
@@ -2682,21 +2682,28 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-const db = firebase.database(); // Changed to database()
+const db = firebase.database(); // Changed from firestore()
 
+// Update view count
 function updateViewCount() {
-  const pagePath = window.location.pathname.replace(/\//g, '_'); // Convert path to valid key
+  const pagePath = window.location.pathname.replace(/\//g, '_'); // Convert "/about" to "_about"
   const ref = db.ref('views/' + pagePath);
-  
+
   ref.transaction((currentCount) => {
-    return (currentCount || 0) + 1;
+    return (currentCount || 0) + 1; // Increment or initialize to 1
   }).then(() => {
-    console.log("View count updated in RTDB!");
-    document.getElementById('viewCount').textContent = currentCount + 1;
+    console.log("View count updated!");
+    // Update the display
+    ref.once('value').then((snapshot) => {
+      document.getElementById('viewCount').textContent = snapshot.val();
+    });
   }).catch((error) => {
     console.error("Error updating views:", error);
   });
 }
+
+// Run on page load
+window.addEventListener('load', updateViewCount);
     </script>
   </body>
 </html>
