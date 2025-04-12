@@ -538,9 +538,8 @@
           transition: transform 0.5s ease, opacity 0.5s ease;
           max-height: 100vh;
   overflow-y: auto; /* Allow scrolling if content exceeds viewport */
-  margin-top: 10px;
-  margin-bottom: 10px;
           backdrop-filter: blur(10px);
+          margin: 0 auto; /* Remove previous top/bottom margins */
           overflow-y: auto; /* Allow scrolling if content exceeds viewport */
         }
   
@@ -1020,16 +1019,22 @@
 /* Improve base responsive styles */
 @media (max-width: 768px) {
   body {
-    padding: 10px 0; /* Reduce vertical padding */
+    position: relative; /* Ensure positioning context */
     min-height: 100vh;
-    height: auto;
-    display: block; /* Change from flex to block */
   }
-  
+
   .status-container {
-    max-width: 95%;
-    margin: 60px auto 20px; /* Increased top margin to account for music control */
-    max-height: calc(100vh - 80px); /* Adjust for top and bottom margins */
+    /* Force absolute center positioning */
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important; /* Remove all margins */
+    /* Ensure container doesn't overflow viewport */
+    max-width: 90% !important;
+    max-height: 80vh !important;
+    /* Reset any transforms from original CSS */
+    scale: 1 !important;
   }
 
   /* Adjust padding to save vertical space */
@@ -1074,9 +1079,13 @@
 /* Small Mobile Devices */
 @media (max-width: 480px) {
   .status-container {
-    margin: 50px auto 15px;
-    max-height: calc(100vh - 65px);
-    transform: scale(1); /* Don't scale down - use the full space */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    max-height: 85vh;
+    width: 90% !important; /* Control width more strictly */
   }
 
   /* Compact all elements vertically */
@@ -1085,8 +1094,8 @@
   }
   
   .avatar {
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     margin-bottom: 8px;
   }
   
@@ -1125,9 +1134,12 @@
   }
   
   .status-container {
-    margin: 45px auto 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
   }
-  
   .avatar {
     width: 60px;
     height: 60px;
@@ -1171,10 +1183,17 @@
   
   .status-container {
     max-width: 95%;
-    margin: 5px auto;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+    /* Keep your existing flex properties for landscape */
     display: flex;
     flex-direction: row;
-    max-height: calc(100vh - 10px);
+    max-height: 90vh;
+
   }
   
   .status-header {
