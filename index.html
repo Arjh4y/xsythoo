@@ -2553,24 +2553,7 @@ function animateTabTitle() {
   }, 400);
 }
 
-// View Counter Functionality
-function updateViewCounter() {
-  const viewCountElement = document.getElementById("viewCount");
-  if (!viewCountElement) return;
 
-  // Get current view count from localStorage or initialize to 0
-  let viewCount = parseInt(localStorage.getItem("viewCount")) || 0;
-
-  // Increment view count only on first page load per session
-  if (!sessionStorage.getItem("hasVisited")) {
-    viewCount += 1;
-    localStorage.setItem("viewCount", viewCount);
-    sessionStorage.setItem("hasVisited", "true");
-  }
-
-  // Update displayed view count
-  viewCountElement.textContent = viewCount.toLocaleString();
-}
 
 // Detect touch devices and remove cursor-related functionality
 function isTouchDevice() {
@@ -2614,7 +2597,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startUpdateInterval();
   createSnowflakes();
   maintainSnowfall();
-  updateViewCounter();
+
   animateTabTitle();
 
   // Attempt to play media
@@ -2654,23 +2637,6 @@ function animateTabTitle() {
   }, 400);
 }
       // View Counter Functionality
-function updateViewCounter() {
-  const viewCountElement = document.getElementById("viewCount");
-  if (!viewCountElement) return;
-
-  // Get current view count from localStorage or initialize to 0
-  let viewCount = parseInt(localStorage.getItem("viewCount")) || 0;
-
-  // Increment view count only on first page load per session
-  if (!sessionStorage.getItem("hasVisited")) {
-    viewCount += 1;
-    localStorage.setItem("viewCount", viewCount);
-    sessionStorage.setItem("hasVisited", "true");
-  }
-
-  // Update displayed view count
-  viewCountElement.textContent = viewCount.toLocaleString();
-}
 
 
 // Detect touch devices and remove cursor-related functionality
