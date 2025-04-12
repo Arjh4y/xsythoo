@@ -1034,7 +1034,7 @@
         }
   
         /* Kick Icon (gamepad) */
-        .footer-icon.fa-gamepad {
+        .footer-icon.fa-kickstarter- {
           color: #53fc18;
           text-shadow: 0 0 10px rgba(83, 252, 24, 0.7);
           animation: gamepadBounce 0.8s infinite alternate;
@@ -1760,7 +1760,7 @@ html, body {
           <i class="fab fa-tiktok footer-icon"></i>
         </a>
         <a href="https://kick.com/pehotv" target="_blank">
-          <i class="fas fa-gamepad footer-icon"></i>
+          <i class="fas fa-kickstarter- footer-icon"></i>
         </a>
       </div>
     </div>
@@ -2477,9 +2477,9 @@ function updateAllActivities(discord) {
       }
       iconHTML = `<img src="${imageUrl}" alt="${activity.name}" style="width: 100%; height: 100%; border-radius: 6px;">`;
     } else {
-      let iconClass = "fas fa-gamepad";
+      let iconClass = "fas fa-kickstarter-";
 
-      if (activity.type === 0) iconClass = "fas fa-gamepad";
+      if (activity.type === 0) iconClass = "fas fa-kickstarter-";
       else if (activity.type === 1) iconClass = "fas fa-broadcast-tower";
       else if (activity.type === 2) iconClass = "fas fa-headphones";
       else if (activity.type === 3) iconClass = "fas fa-tv";
