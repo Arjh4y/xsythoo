@@ -968,7 +968,7 @@
         }
   
         /* Kick Icon (gamepad) */
-        .footer-icon.fa-kickstarter- {
+        .footer-icon.fa-kickstarter-k {
           color: #53fc18;
           text-shadow: 0 0 10px rgba(83, 252, 24, 0.7);
           animation: gamepadBounce 0.8s infinite alternate;
@@ -1703,7 +1703,6 @@ html, body {
         </a>
         <a href="https://www.tiktok.com/@_sytho?lang=en" target="_blank">
           <i class="fab fa-tiktok footer-icon"></i>
-        </a>
         <a href="https://kick.com/xsythoo" target="_blank">
           <i class="fa-brands fa-kickstarter-k footer-icon"></i>
         </a>
@@ -2180,7 +2179,8 @@ function initializeAudio() {
   backgroundMusic.currentTime = 0;
   backgroundMusic.volume = 0.5;
   backgroundMusic.muted = true; // Start muted to help with autoplay restrictions
-
+  
+  // Load the audio file but don't play it
 }
 
 function updateMusicButton() {
@@ -2423,9 +2423,9 @@ function updateAllActivities(discord) {
       }
       iconHTML = `<img src="${imageUrl}" alt="${activity.name}" style="width: 100%; height: 100%; border-radius: 6px;">`;
     } else {
-      let iconClass = "fas fa-kickstarter-";
+      let iconClass = "fas fa-kickstarter-k";
 
-      if (activity.type === 0) iconClass = "fas fa-kickstarter-";
+      if (activity.type === 0) iconClass = "fas fa-kickstarter-k";
       else if (activity.type === 1) iconClass = "fas fa-broadcast-tower";
       else if (activity.type === 2) iconClass = "fas fa-headphones";
       else if (activity.type === 3) iconClass = "fas fa-tv";
