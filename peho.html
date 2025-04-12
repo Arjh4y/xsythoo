@@ -2205,23 +2205,22 @@ document.querySelectorAll('.footer a').forEach(link => {
         });
       }
 
-      // Glow Pulse on Music Control
-      function setupMusicControlEffects() {
-        if (!musicControl) return;
+// Glow Pulse on Music Control
+function setupMusicControlEffects() {
+  if (!musicControl) return;
 
-        musicControl.addEventListener("click", (e) => {
-          const glow = document.createElement("div");
-          glow.className = "glow-pulse";
-          glow.style.left = `${e.clientX}px`;
-          glow.style.top = `${e.clientY}px`;
-          document.body.appendChild(glow);
+  musicControl.addEventListener("click", (e) => {
+    const glow = document.createElement("div");
+    glow.className = "glow-pulse";
+    glow.style.left = `${e.clientX}px`;
+    glow.style.top = `${e.clientY}px`;
+    document.body.appendChild(glow);
 
-          glow.addEventListener("animationend", () => {
-            glow.remove();
-          });
-        });
-      }
-
+    glow.addEventListener("animationend", () => {
+      glow.remove();
+    });
+  });
+}
       // Badge Tooltips
       function setupBadgeTooltips() {
         const badgeDescriptions = {
@@ -2298,7 +2297,6 @@ function initializeAudio() {
   backgroundMusic.volume = 0.5;
   backgroundMusic.muted = true; // Start muted to help with autoplay restrictions
   
-  // Load the audio file but don't play it
 }
 
 
@@ -2323,8 +2321,9 @@ function toggleMusic() {
       updateMusicButton();
     });
   } else {
+    backgroundMusic.muted = false; // Important: unmute before playing
     const playPromise = backgroundMusic.play();
-
+    
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
@@ -2342,6 +2341,7 @@ function toggleMusic() {
     }
   }
 }
+
 
 function setupMusicControl() {
   if (!backgroundMusic || !musicControl || !musicIcon) return;
