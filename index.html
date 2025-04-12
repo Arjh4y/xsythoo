@@ -6,9 +6,9 @@
     <title>Xsythoo_</title>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="rj.jpg">
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
@@ -542,7 +542,13 @@
           backdrop-filter: blur(10px);
           margin: 0 auto; /* Remove previous top/bottom margins */
           overflow-y: auto; /* Allow scrolling if content exceeds viewport */
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none;  /* Internet Explorer 10+ */
         }
+
+        .status-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
   
         .status-container.visible {
           transform: scale(1);
@@ -660,6 +666,8 @@
           margin-bottom: 8px;
           align-items: center;
           justify-content: center;
+          overflow: visible !important; /* Prevent hiding badges */
+          flex-wrap: wrap; /* Allow badges to wrap if needed */
         }
   
         .badge {
@@ -1060,6 +1068,11 @@
   .badges {
     margin-bottom: 4px;
   }
+
+  .badges {
+    gap: 5px; /* Reduce gap between badges on mobile */
+  }
+  
   
   .spotify-section, .activities-section {
     margin-bottom: 8px;
@@ -1077,6 +1090,11 @@
   }
 }
 
+.badge-tooltip {
+  white-space: normal; /* Allow tooltip text to wrap */
+  max-width: 120px; /* Limit tooltip width */
+  word-break: break-word; /* Prevent long words from overflowing */
+}
 /* Small Mobile Devices */
 @media (max-width: 480px) {
   .status-container {
@@ -1656,6 +1674,11 @@ html, body {
                 ><i class="fas fa-wrench"></i
               ></span>
             </div>
+
+            <div class="badges_one" id="badges_one">
+              <span class="badge-typing-text_one" id="typingText_description"></span>
+            </div>
+
             <div class="view-counter">
                 <i class="fas fa-eye"></i>
                 <span id="viewCount">0</span>
@@ -1711,6 +1734,61 @@ html, body {
     </div>
 
     <script>
+
+// Firebase Initialization (place this at the top of your script, before DOMContentLoaded)
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IbZ7nPpDgQYfgwaHPHMJDvnc-skYVUs",
+  authDomain: "realtime-view-counter-39162.firebaseapp.com",
+  databaseURL: "https://realtime-view-counter-39162-default-rtdb.firebaseio.com",
+  projectId: "realtime-view-counter-39162",
+  storageBucket: "realtime-view-counter-39162.firebasestorage.app",
+  messagingSenderId: "1078924563985",
+  appId: "1:1078924563985:web:6fa7bc137190bd521b83b0"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Enhanced View Counter
+function setupViewCounter() {
+  const viewCountElement = document.getElementById('viewCount');
+  if (!viewCountElement) return;
+
+  // Show loading state
+  viewCountElement.textContent = '...';
+
+  const counterRef = database.ref('viewCount');
+  
+// Generate a unique visitor ID that lasts for the session
+if (!sessionStorage.getItem('visitorId')) {
+  sessionStorage.setItem('visitorId', Date.now().toString());
+  // Increment counter
+  counterRef.transaction((currentCount) => {
+    return (currentCount || 0) + 1;
+  });
+}
+
+  // Listen for real-time updates
+  counterRef.on('value', (snapshot) => {
+    const count = snapshot.val();
+    viewCountElement.textContent = count !== null ? count : '0';
+  }, (error) => {
+    console.error('View counter listener error:', error);
+    viewCountElement.textContent = 'Error';
+  });
+}
+
+// Update your DOMContentLoaded event listener to include this:
+document.addEventListener("DOMContentLoaded", () => {
+  // Existing initialization code...
+  
+  // Add this line with your other setup calls
+  setupViewCounter();
+  
+  // Rest of your initialization...
+});
+
 const discordId = "454812651394957322";
 let updateInterval;
 let musicPlaying = false;
@@ -2665,45 +2743,140 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+/**
+ * Advanced Typing Animation Function
+ * @param {string} elementId - ID of the element to apply typing effect
+ * @param {string[]} texts - Array of texts to type
+ * @param {Object} options - Configuration options
+ */
+ function advancedTypingAnimation(elementId, texts, options = {}) {
+    // Default options
+    const defaults = {
+        typeSpeed: 50,           // Typing speed in milliseconds
+        deleteSpeed: 30,         // Deleting speed in milliseconds
+        delayBetweenTexts: 2000, // Delay before starting next text
+        loop: true,              // Whether to loop the animation
+        showCursor: true,        // Whether to show blinking cursor
+        cursorChar: '|',        // Cursor character
+        cursorBlinkSpeed: 500,   // Cursor blink speed in milliseconds
+        onComplete: null         // Callback when animation completes (only if loop is false)
+    };
 
+    // Merge options with defaults
+    const settings = {...defaults, ...options};
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC78ujpZdXb_4qV7niM5fx-Ocjet8NyjeQ",
-  authDomain: "xsythoo.firebaseapp.com",
-  databaseURL: "https://xsythoo-default-rtdb.firebaseio.com", // Required for RTDB
-  projectId: "xsythoo",
-  storageBucket: "xsythoo.appspot.com",
-  messagingSenderId: "35680080254",
-  appId: "1:35680080254:web:26ba30b5ccf45558f0a32f",
-  measurementId: "G-VR3P5QC26J"
-};
+    // Get the target element
+    const element = document.getElementById(elementId);
+    if (!element) return;
 
-// Initialize RTDB
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+    // Add cursor if enabled
+    if (settings.showCursor) {
+        const cursor = document.createElement('span');
+        cursor.className = 'typing-cursor';
+        cursor.textContent = settings.cursorChar;
+        element.appendChild(cursor);
+        
+        // Add blinking animation
+        setInterval(() => {
+            cursor.style.visibility = cursor.style.visibility === 'hidden' ? 'visible' : 'hidden';
+        }, settings.cursorBlinkSpeed);
+    }
+
+    let currentTextIndex = 0;
+    let isDeleting = false;
+    let currentText = '';
+    let typingTimeout;
+
+    // Main typing function
+    const type = () => {
+        const fullText = texts[currentTextIndex];
+        
+        if (isDeleting) {
+            // Delete text
+            currentText = fullText.substring(0, currentText.length - 1);
+        } else {
+            // Type text
+            currentText = fullText.substring(0, currentText.length + 1);
+        }
+
+        // Update element (without cursor)
+        if (settings.showCursor) {
+            element.innerHTML = currentText + `<span class="typing-cursor">${settings.cursorChar}</span>`;
+        } else {
+            element.textContent = currentText;
+        }
+
+        // Determine typing speed
+        let typeSpeed = settings.typeSpeed;
+        if (isDeleting) {
+            typeSpeed = settings.deleteSpeed;
+        }
+
+        // Check if current text is complete
+        if (!isDeleting && currentText === fullText) {
+            // Pause at end of text
+            typeSpeed = settings.delayBetweenTexts;
+            isDeleting = true;
+        } else if (isDeleting && currentText === '') {
+            // Move to next text when deleted
+            isDeleting = false;
+            currentTextIndex++;
+            
+            // Check if we've reached the end of the array
+            if (currentTextIndex >= texts.length) {
+                if (settings.loop) {
+                    currentTextIndex = 0;
+                } else {
+                    // Animation complete
+                    if (typeof settings.onComplete === 'function') {
+                        settings.onComplete();
+                    }
+                    return;
+                }
+            }
+        }
+
+        // Continue typing
+        typingTimeout = setTimeout(type, typeSpeed);
+    };
+
+    // Start typing
+    type();
+
+    // Return a function to stop the animation
+    return () => {
+        clearTimeout(typingTimeout);
+        if (settings.showCursor) {
+            const cursor = element.querySelector('.typing-cursor');
+            if (cursor) {
+                cursor.remove();
+            }
+        }
+    };
 }
-const db = firebase.database(); // Changed from firestore()
 
-// Update view count
-function updateViewCount() {
-  const pagePath = window.location.pathname.replace(/\//g, '_'); // Convert "/about" to "_about"
-  const ref = db.ref('views/' + pagePath);
+// Example usage:
+// advancedTypingAnimation('typingText_description', 
+//   ["First text to type", "Second text to display", "Third option"],
+//   {
+//     typeSpeed: 70,
+//     deleteSpeed: 40,
+//     loop: true,
+//     showCursor: true
+//   }
+// );
+advancedTypingAnimation('typingText_description', 
+  ["KUPAL KABA", "GAGI KABA", "HELLO"],
+  {
+    typeSpeed: 70,
+    deleteSpeed: 40,
+    loop: true
+  }
+);
 
-  ref.transaction((currentCount) => {
-    return (currentCount || 0) + 1; // Increment or initialize to 1
-  }).then(() => {
-    console.log("View count updated!");
-    // Update the display
-    ref.once('value').then((snapshot) => {
-      document.getElementById('viewCount').textContent = snapshot.val();
-    });
-  }).catch((error) => {
-    console.error("Error updating views:", error);
-  });
-}
 
-// Run on page load
-window.addEventListener('load', updateViewCount);
     </script>
+
+
   </body>
 </html>
