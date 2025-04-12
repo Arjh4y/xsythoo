@@ -2696,6 +2696,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add any other cursor-related event listeners you want to remove
   }
 });
+
+
+
+
+// Initialize Firebase (add your config)
+const firebaseConfig = {
+  apiKey: "AIzaSyC78ujpZdXb_4qV7niM5fx-Ocjet8NyjeQ",
+  authDomain: "xsythoo.firebaseapp.com",
+  projectId: "xsythoo",
+  storageBucket: "xsythoo.firebasestorage.app",
+  messagingSenderId: "35680080254",
+  appId: "1:35680080254:web:26ba30b5ccf45558f0a32f",
+  measurementId: "G-VR3P5QC26J"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Update view count
+function updateViewCount() {
+  const pagePath = window.location.pathname;
+  
+  db.collection("views").doc(pagePath).get().then((doc) => {
+    let currentCount = 0;
+    if (doc.exists) {
+      currentCount = doc.data().count || 0;
+    }
+    
+    // Increment count
+    currentCount++;
+    
+    // Update in Firestore
+    db.collection("views").doc(pagePath).set({
+      count: currentCount,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    // Update display
+    document.getElementById('viewCount').textContent = currentCount;
+  });
+}
+
+// Call on page load
+updateViewCount();
     </script>
   </body>
 </html>
