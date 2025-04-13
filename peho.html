@@ -1686,12 +1686,10 @@ html, body {
       <i class="fas fa-volume-up" id="musicIcon"></i>
     </div>
 
-    <!-- Audio Element -->
-    <audio loop id="backgroundMusic" muted>
+    <audio loop id="backgroundMusic">
       <source src="PEHOSOUNDS.mp3" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
-
     
 
     <div class="status-container" id="statusContainer">
@@ -1916,40 +1914,20 @@ function setupEnterButton() {
   enterButton.addEventListener("click", (e) => {
     e.stopPropagation();
 
-    if (!loadingScreen || !statusContainer || !bgVideo || !customCursor) return;
-
-    // Create particle explosion at button
-    const rect = enterButton.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    createEntranceParticles(centerX, centerY);
-
-    // Play entrance sound
-    playEntranceSound();
-
-    // IMPORTANT: Play background music ONLY when enter button is clicked
+    // Play background music ONLY if not already playing
     if (!musicPlaying && backgroundMusic) {
-      // Make sure audio is unmuted before trying to play
-      backgroundMusic.muted = false;
       const playPromise = backgroundMusic.play();
       
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            musicPlaying = true;
-            backgroundMusic.volume = 0.5; // Set initial volume
-            updateMusicButton(); // Update button icon and state
-          })
-          .catch((error) => {
-            console.error("Audio playback failed:", error);
-            if (musicControl) {
-              musicControl.title = "Click again to enable audio";
-              setTimeout(() => {
-                musicControl.title = "";
-              }, 3000);
-            }
-          });
-      }
+      playPromise
+        .then(() => {
+          musicPlaying = true;
+          updateMusicButton();
+        })
+        .catch((error) => {
+          console.error("Audio playback failed:", error);
+          musicControl.title = "Click again to enable audio";
+          setTimeout(() => musicControl.title = "", 3000);
+        });
     }
 
     // Cursor transformation
@@ -2285,17 +2263,17 @@ function fadeVolume(startVol, endVol, callback) {
   requestAnimationFrame(updateVolume);
 }
 
-// Initialize music in stopped state
 function initializeAudio() {
   if (!backgroundMusic) return;
   
-  // Always start with music completely stopped
+  // Force stop playback
   backgroundMusic.pause();
   backgroundMusic.currentTime = 0;
   backgroundMusic.volume = 0.5;
-  backgroundMusic.muted = true; // Start muted to help with autoplay restrictions
+  
+  // Remove muted state (we want full control)
+  backgroundMusic.muted = false;
 }
-
 function updateMusicButton() {
   if (!musicIcon || !musicControl) return;
 
