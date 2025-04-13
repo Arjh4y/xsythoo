@@ -1687,7 +1687,7 @@ html, body {
     </div>
 
     <!-- Audio Element -->
-    <audio loop id="backgroundMusic">
+    <audio loop id="backgroundMusic" muted>
       <source src="PEHOSOUNDS.mp3" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
@@ -1914,7 +1914,7 @@ function setupEnterButton() {
   if (!enterButton) return;
 
   enterButton.addEventListener("click", (e) => {
-    e.stopPropagation(); // Prevent event bubbling
+    e.stopPropagation();
 
     if (!loadingScreen || !statusContainer || !bgVideo || !customCursor) return;
 
@@ -2294,8 +2294,6 @@ function initializeAudio() {
   backgroundMusic.currentTime = 0;
   backgroundMusic.volume = 0.5;
   backgroundMusic.muted = true; // Start muted to help with autoplay restrictions
-  
-  // Load the audio file but don't play it
 }
 
 function updateMusicButton() {
