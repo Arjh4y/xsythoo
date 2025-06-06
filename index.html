@@ -1,1 +1,3095 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xsythoo_</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="rj.jpg">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+  
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: "Inter", sans-serif;
+          -webkit-tap-highlight-color: transparent;
+        }
+  
+        /* Loading Screen */
+        .loading-screen {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.95);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+          transition: opacity 1s ease-out;
+        }
+  
+        .loading-screen.fade-out {
+          opacity: 0;
+          pointer-events: none;
+        }
+  
+        .loading-logo {
+          width: 120px;
+          height: 120px;
+          margin-bottom: 30px;
+          border-radius: 50%;
+          border: 3px solid rgba(255, 255, 255, 0.1);
+          background: linear-gradient(45deg, #000000, #1a1a1a);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          animation: pulse 2s infinite alternate;
+          overflow: hidden;
+        }
+  
+        .loading-logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+  
+        .loading-text {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 18px;
+          margin-top: 20px;
+          text-align: center;
+          position: relative;
+          height: 40px;
+        }
+  
+        .typing-text {
+          display: inline-block;
+          position: relative;
+        }
+  
+        .typing-text::after {
+          content: "|";
+          position: absolute;
+          right: -5px;
+          animation: blink 0.7s infinite;
+        }
+  
+        .enter-button {
+          margin-top: 40px;
+          padding: 12px 30px;
+          background: transparent;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          color: white;
+          font-size: 16px;
+          border-radius: 30px;
+          cursor: none;
+          transition: all 0.3s ease;
+          opacity: 0;
+          transform: translateY(20px);
+          min-width: 160px;
+        }
+  
+        .enter-button:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.7);
+          transform: translateY(0) scale(1.05);
+        }
+  
+        .enter-button.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+  
+/* Kupal Message */
+.kupal-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  font-family: 'Creepster', cursive; /* Scary font */
+}
+
+  
+        .kupal-message.show {
+          opacity: 1;
+        }
+  
+        @keyframes blink {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0;
+          }
+        }
+  
+        @keyframes pulse {
+          0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1);
+          }
+          70% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
+          }
+          100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+          }
+        }
+  
+        /* Main Content */
+        body {
+          background-color: rgba(0, 0, 0, 0.9);
+          color: #e0e0e0;
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+          position: relative;
+          overflow: hidden;
+          cursor: none;
+        }
+
+        body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('fallback-high-res.jpg') no-repeat center center;
+  background-size: cover;
+  z-index: -2; /* Behind video */
+  filter: grayscale(100%);
+}
+  
+        /* Custom Cursor Styles */
+        .custom-cursor {
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          pointer-events: none;
+          z-index: 9999;
+          transform: translate(-50%, -50%);
+        }
+  
+        .custom-cursor::before {
+          content: "";
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255, 255, 255, 0.7);
+          border-radius: 50%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          animation: cursorPulse 2s infinite ease-in-out;
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+  
+        .custom-cursor::after {
+          content: "";
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          background-color: rgba(255, 255, 255, 0.9);
+          border-radius: 50%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+  
+        @keyframes cursorPulse {
+          0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.7;
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.2);
+            opacity: 0.9;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.7;
+          }
+        }
+  
+        /* Hover state for cursor */
+        a,
+        button,
+        .music-control,
+        .footer-icon,
+        .avatar,
+        .badge {
+          cursor: none;
+        }
+  
+        .custom-cursor.interactive::before {
+          border-color: rgba(255, 255, 255, 1);
+          animation: cursorPulseHover 0.5s infinite ease-in-out;
+          box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+  
+        @keyframes cursorPulseHover {
+          0% {
+            transform: translate(-50%, -50%) scale(1.1);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.3);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1.1);
+            opacity: 1;
+          }
+        }
+  
+.video-background {
+  filter: blur(5px);
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  pointer-events: none; /* Already present, kept for clarity */
+  user-select: none; /* Prevent selection */
+  touch-action: none; /* Prevent touch interactions */
+  transition: filter 0.4s ease-in-out;
+}
+
+
+
+        /* Snow Animation */
+        .snowflake {
+          position: fixed;
+          width: 5px;
+          height: 5px;
+          background-color: white;
+          border-radius: 50%;
+          opacity: 0.7;
+          pointer-events: none;
+          animation: fall linear infinite;
+          z-index: 1;
+        }
+  
+        @keyframes fall {
+          0% {
+            transform: translateY(-20px) translateX(0) rotate(0deg);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.8;
+          }
+          90% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(100vh) translateX(20px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+/* Advanced Cursor Snowflake Trail */
+.cursor-snowflake {
+  position: fixed;
+  pointer-events: none; /* Ensures snowflakes don't interfere with any click events */
+  z-index: 1001;
+  animation: cursorSnowflakeFade 2s ease-out forwards;
+}
+
+/* Completely isolate snowflakes from status container */
+.cursor-snowflake {
+  isolation: isolate; /* Modern browsers - isolates the stacking context */
+  pointer-events: none !important; /* Ensures snowflakes never capture mouse events */
+}
+
+/* Status container protection - ensure no interference */
+.status-container {
+  /* These properties ensure the status container is not affected by the snowflakes */
+  position: relative !important; /* Maintain original positioning context */
+  z-index: 1002 !important; /* Higher than snowflakes */
+  pointer-events: auto !important; /* Ensure clickability */
+  transform: none !important; /* Prevent any transform inheritance */
+  animation: none !important; /* Prevent any animation inheritance */
+}
+
+/* Multiple snowflake sizes and styles */
+.cursor-snowflake.tiny {
+  width: 3px;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+}
+
+.cursor-snowflake.small {
+  width: 6px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
+.cursor-snowflake.medium {
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 30%, rgba(210, 235, 255, 0.8) 70%);
+  border-radius: 50%;
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.6);
+}
+
+.cursor-snowflake.large {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 20%, rgba(230, 242, 255, 0.85) 60%);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+}
+
+/* Crystal snowflake shape */
+.cursor-snowflake.crystal {
+  width: 14px;
+  height: 14px;
+  background: transparent;
+  position: relative;
+  transform: rotate(45deg);
+}
+
+.cursor-snowflake.crystal::before, 
+.cursor-snowflake.crystal::after {
+  content: '';
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.cursor-snowflake.crystal::before {
+  width: 14px;
+  height: 2px;
+  top: 6px;
+  left: 0;
+}
+
+.cursor-snowflake.crystal::after {
+  height: 14px;
+  width: 2px;
+  top: 0;
+  left: 6px;
+}
+
+/* Sparkle effect for some snowflakes */
+.cursor-snowflake.sparkle {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+  box-shadow: 
+    0 0 0 2px rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: sparkleAnimation 1.8s ease-out forwards;
+}
+
+/* Different animation variations */
+@keyframes cursorSnowflakeFade {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(0.2) translateY(30px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes cursorSnowflakeDrift {
+  0% {
+    transform: scale(1) translateY(0) translateX(0);
+    opacity: 0.9;
+  }
+  25% {
+    transform: scale(0.8) translateY(5px) translateX(10px);
+  }
+  50% {
+    transform: scale(0.6) translateY(15px) translateX(-5px);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(0.2) translateY(40px) translateX(15px);
+    opacity: 0;
+  }
+}
+
+@keyframes cursorSnowflakeSpin {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(0.3) translateY(25px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkleAnimation {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+    box-shadow: 
+      0 0 0 0 rgba(255, 255, 255, 0.8),
+      0 0 0 1px rgba(255, 255, 255, 0.3);
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 0.8;
+    box-shadow: 
+      0 0 8px 1px rgba(255, 255, 255, 0.9),
+      0 0 12px 2px rgba(210, 235, 255, 0.6);
+  }
+  100% {
+    transform: scale(0.2) translateY(30px);
+    opacity: 0;
+    box-shadow: 
+      0 0 0 0 rgba(255, 255, 255, 0),
+      0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+  
+        /* Click Particle Effect */
+        .click-particle {
+          position: fixed;
+          width: 10px;
+          height: 10px;
+          background-color: rgba(255, 255, 255, 0.8);
+          border-radius: 50%;
+          pointer-events: none;
+          animation: particleFade 1s ease-out forwards;
+          z-index: 1000;
+        }
+  
+        @keyframes particleFade {
+          0% {
+            transform: scale(1);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(3);
+            opacity: 0;
+          }
+        }
+  
+        /* Heart Animation for Double-Click */
+        .heart {
+          position: fixed;
+          width: 20px;
+          height: 20px;
+          background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(255, 100, 100, 0.8)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')
+            no-repeat center;
+          background-size: contain;
+          pointer-events: none;
+          animation: heartFade 1s ease-out forwards;
+          z-index: 1002;
+        }
+  
+        @keyframes heartFade {
+          0% {
+            transform: scale(1) rotate(0deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(2) rotate(45deg) translateY(-30px);
+            opacity: 0;
+          }
+        }
+  
+        /* Ripple Effect */
+        .ripple {
+          position: absolute;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 50%;
+          transform: scale(0);
+          pointer-events: none;
+          animation: rippleAnimation 0.6s linear;
+          z-index: 10;
+        }
+  
+        @keyframes rippleAnimation {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+  
+        /* Background Color Shift */
+        body.color-shift {
+          transition: background-color 0.5s ease;
+        }
+  
+        body.color-shift-active {
+          background-color: rgba(30, 30, 60, 0.9);
+        }
+  
+    /* Music Control Button */
+.music-control {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4),
+    0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.music-control:hover {
+  transform: scale(1.1);
+}
+
+.music-control i {
+  color: white;
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.music-control:hover i {
+  transform: scale(1.1);
+}
+
+/* Heartbeat animation when music is playing */
+.music-control.playing {
+  animation: heartbeat 1.5s infinite ease-in-out;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+  25% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.2),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+  50% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+  75% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.2),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
+      0 4px 15px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Hover state when music is playing */
+.music-control.playing:hover {
+  animation: heartbeatHover 1s infinite ease-in-out;
+}
+
+@keyframes heartbeatHover {
+  0% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6),
+      0 6px 20px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0),
+      0 6px 20px rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
+      0 6px 20px rgba(255, 255, 255, 0.2);
+  }
+}
+  
+        /* Glow Pulse for Music Control */
+        .glow-pulse {
+          position: absolute;
+          width: 50px;
+          height: 50px;
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.5) 0%,
+            rgba(255, 255, 255, 0) 70%
+          );
+          border-radius: 50%;
+          pointer-events: none;
+          animation: glowPulseAnimation 0.8s ease-out forwards;
+          z-index: 999;
+        }
+  
+        @keyframes glowPulseAnimation {
+          0% {
+            transform: scale(1);
+            opacity: 0.5;
+          }
+          100% {
+            transform: scale(3);
+            opacity: 0;
+          }
+        }
+  
+        .status-container {
+          background-color: rgba(20, 20, 20, 0.7);
+          border-radius: 12px;
+          width: 100%;
+          max-width: 500px;
+          overflow: hidden;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          position: relative;
+          z-index: 10;
+          transform: scale(0.95);
+          opacity: 0;
+          transition: transform 0.5s ease, opacity 0.5s ease;
+          max-height: 100vh;
+  overflow-y: auto; /* Allow scrolling if content exceeds viewport */
+          backdrop-filter: blur(10px);
+          margin: 0 auto; /* Remove previous top/bottom margins */
+          overflow-y: auto; /* Allow scrolling if content exceeds viewport */
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+
+        .status-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+  
+        .status-container.visible {
+          transform: scale(1);
+          opacity: 1;
+        }
+  
+        .status-container.parallax {
+          transition: transform 0.2s ease-out;
+        }
+  
+        .status-header {
+          padding: 25px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          text-align: center;
+        }
+  
+          /* Add this to your existing CSS */
+          .avatar-container {
+    position: relative;
+    margin-bottom: 15px;
+  }
+
+  .avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid rgba(26, 26, 26, 0.7);
+    transition: all 0.3s ease;
+    position: relative;
+    animation: borderBeat 1.5s infinite ease-out;
+  }
+
+  /* Continuous border pulse effect */
+  @keyframes borderBeat {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+  }
+
+  .avatar:hover {
+    transform: scale(1.05);
+    filter: grayscale(0%);
+  }
+  
+        .status-indicator {
+          position: absolute;
+          bottom: 11px;
+          right: 12px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background-color: #f04747;
+          border: 3px solid rgba(26, 26, 26, 0.7);
+          z-index: 2;
+        }
+  
+        .username {
+          font-size: 24px;
+          font-weight: 600;
+          color: #ffffff;
+          margin-bottom: 8px;
+          position: relative;
+          display: inline-block;
+          animation: textGlow 3s infinite alternate;
+        }
+  
+        @keyframes textGlow {
+          0% {
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+          }
+          100% {
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9),
+              0 0 20px rgba(255, 255, 255, 0.5);
+          }
+        }
+  
+        .crown-icon {
+          color: #ffffff;
+          margin-left: 5px;
+          animation: rotateCrown 5s infinite linear;
+        }
+  
+        @keyframes rotateCrown {
+          0% {
+            transform: rotate(0deg);
+          }
+          25% {
+            transform: rotate(10deg);
+          }
+          50% {
+            transform: rotate(0deg);
+          }
+          75% {
+            transform: rotate(-10deg);
+          }
+          100% {
+            transform: rotate(0deg);
+          }
+        }
+  
+        .badges {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 8px;
+          align-items: center;
+          justify-content: center;
+          overflow: visible !important; /* Prevent hiding badges */
+          flex-wrap: wrap; /* Allow badges to wrap if needed */
+        }
+  
+        .badge {
+          font-size: 18px;
+          transition: transform 0.3s ease;
+          position: relative;
+        }
+  
+        .badge:hover {
+          transform: scale(1.2);
+        }
+  
+        .badge-tooltip {
+          position: absolute;
+          top: -30px;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: rgba(30, 30, 30, 0.95);
+          color: white;
+          padding: 5px 10px;
+          border-radius: 4px;
+          font-size: 12px;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+          z-index: 1003;
+          min-width: max-content; /* Add this to make sure tooltip expands to fit content */
+          width: auto;
+
+        }
+  
+        .badge:hover .badge-tooltip {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-5px);
+        }
+  
+        .badge-tooltip::after {
+          content: "";
+          position: absolute;
+          bottom: -5px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-width: 5px;
+          border-style: solid;
+          border-color: rgba(30, 30, 30, 0.95) transparent transparent transparent;
+        }
+  
+        .status-text {
+          font-size: 14px;
+          color: #b9bbbe;
+          padding: 5px 10px;
+          border-radius: 15px;
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+  
+        .spotify-section,
+        .activities-section {
+          display: none;
+        }
+  
+        .spotify-section {
+          background-color: rgba(30, 30, 30, 0.6);
+          padding: 15px;
+          border-radius: 8px;
+          margin: 0 15px 15px;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+  
+        .spotify-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 12px;
+          color: #b9bbbe;
+          font-size: 12px;
+        }
+  
+        .spotify-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #2bad5d;
+          margin-left: 8px;
+          animation: pulse 1.5s infinite alternate;
+        }
+  
+        .player-content {
+          display: flex;
+          align-items: center;
+          margin-bottom: 12px;
+        }
+  
+        .album-art {
+          width: 54px;
+          height: 54px;
+          border-radius: 6px;
+          margin-right: 12px;
+          object-fit: cover;
+          filter: grayscale(100%);
+          transition: filter 0.3s ease;
+        }
+  
+        .album-art:hover {
+          filter: grayscale(50%);
+        }
+  
+        .track-info {
+          flex: 1;
+          overflow: hidden;
+        }
+  
+        .song-title {
+          font-size: 14px;
+          font-weight: 500;
+          color: white;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          margin-bottom: 5px;
+        }
+  
+        .artist {
+          font-size: 12px;
+          color: #b9bbbe;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+  
+        .progress-container {
+          width: 100%;
+          height: 4px;
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 2px;
+          margin-bottom: 6px;
+          overflow: hidden;
+        }
+  
+        .progress-bar {
+          height: 100%;
+          background-color: #ffffff;
+          width: 45%;
+          position: relative;
+        }
+  
+        .progress-bar::after {
+          content: "";
+          position: absolute;
+          right: 0;
+          top: 0;
+          height: 100%;
+          width: 5px;
+          background-color: rgba(255, 255, 255, 0.8);
+          border-radius: 2px;
+        }
+  
+        .time {
+          display: flex;
+          justify-content: space-between;
+          font-size: 11px;
+          color: #b9bbbe;
+        }
+  
+        .activities-section {
+          background-color: rgba(30, 30, 30, 0.6);
+          padding: 15px;
+          border-radius: 8px;
+          margin: 0 15px 15px;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+  
+        .activities-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 12px;
+          color: #b9bbbe;
+          font-size: 12px;
+        }
+  
+        .activity-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #5865f2;
+          margin-left: 8px;
+          animation: pulse 1.5s infinite alternate;
+        }
+  
+        .activity-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+  
+        .activity-item:last-child {
+          margin-bottom: 0;
+          padding-bottom: 0;
+          border-bottom: none;
+        }
+  
+        .activity-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 6px;
+          background-color: rgba(255, 255, 255, 0.1);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-right: 12px;
+          font-size: 20px;
+        }
+  
+        .activity-icon i {
+          color: #ffffff;
+        }
+  
+        .activity-info {
+          flex: 1;
+        }
+  
+        .activity-name {
+          font-size: 14px;
+          font-weight: 500;
+          color: white;
+          margin-bottom: 4px;
+        }
+  
+        .activity-details,
+        .activity-state {
+          font-size: 12px;
+          color: #b9bbbe;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+  
+        .activity-elapsed {
+          font-size: 11px;
+          color: #72767d;
+          margin-top: 4px;
+        }
+  
+        #activities-container {
+          width: 100%;
+        }
+  
+        .footer {
+          display: flex;
+          justify-content: center;
+          padding: 15px 10px; /* Reduce padding */
+          gap: 15px;
+          background-color: rgba(25, 25, 25, 0.6);
+          flex-wrap: wrap; /* Allow items to wrap to next line */
+          overflow: hidden; /* Prevent any overflow */
+        }
+  
+        .footer-icon {
+          color: #ffffff;
+          font-size: 28px; /* Larger icons */
+          transition: all 0.3s ease;
+          min-width: 40px; /* Larger hit area */
+          min-height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+  
+        /* YouTube Icon */
+        .footer-icon.fa-youtube {
+          color: #ff0000;
+          animation: youtubePulse 2s infinite;
+        }
+  
+        @keyframes youtubePulse {
+          0% {
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+          }
+          50% {
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.9);
+          }
+          100% {
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+          }
+        }
+  
+        /* TikTok Icon */
+        .footer-icon.fa-tiktok {
+          color: #ffffff;
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+          animation: tiktokShake 0.5s infinite alternate;
+        }
+  
+        @keyframes tiktokShake {
+          0% {
+            transform: rotate(-5deg);
+          }
+          100% {
+            transform: rotate(5deg);
+          }
+        }
+  
+        /* Kick Icon (gamepad) */
+        .footer-icon.fa-kickstarter-k {
+          color: #53fc18;
+          text-shadow: 0 0 10px rgba(83, 252, 24, 0.7);
+          animation: gamepadBounce 0.8s infinite alternate;
+        }
+  
+        @keyframes gamepadBounce {
+          0% {
+            transform: translateY(0);
+          }
+          100% {
+            transform: translateY(-5px);
+          }
+        }
+  
+        .footer-icon:hover {
+          transform: translateY(-5px) scale(1.1);
+        }
+  
+        /* Glow effect on hover */
+        .footer-icon::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+  
+        .footer-icon:hover::after {
+          opacity: 1;
+        }
+  
+        .empty-activities {
+          text-align: center;
+          padding: 12px;
+          color: #72767d;
+          font-size: 13px;
+        }
+  
+        /* Responsive Styles */
+    /* Responsive Improvements for Mobile Devices */
+
+/* Enhanced Base Responsive Styles */
+/* Improve base responsive styles */
+@media (max-width: 768px) {
+  body {
+    position: relative; /* Ensure positioning context */
+    min-height: 100vh;
+  }
+
+  .status-container {
+    /* Force absolute center positioning */
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important; /* Remove all margins */
+    /* Ensure container doesn't overflow viewport */
+    max-width: 90% !important;
+    max-height: 80vh !important;
+    /* Reset any transforms from original CSS */
+    scale: 1 !important;
+  }
+
+  /* Adjust padding to save vertical space */
+  .status-header {
+    padding: 15px 15px 10px;
+  }
+  
+  .footer {
+    padding: 10px;
+    gap: 18px;
+  }
+  
+  /* Position music control absolutely to prevent layout shift */
+  .music-control {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 1010;
+  }
+  
+  /* Reduce vertical spacing */
+  .badges {
+    margin-bottom: 4px;
+  }
+
+  .badges {
+    gap: 5px; /* Reduce gap between badges on mobile */
+  }
+  
+  
+  .spotify-section, .activities-section {
+    margin-bottom: 8px;
+    padding: 10px;
+  }
+  
+  .activity-item {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+  
+  /* Loading screen adjustments */
+  .loading-screen {
+    height: 100%; /* Use full height */
+  }
+}
+
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+  .status-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    max-height: 85vh;
+    width: 90% !important; /* Control width more strictly */
+  }
+
+  /* Compact all elements vertically */
+  .status-header {
+    padding: 12px 10px 8px;
+  }
+  
+  .avatar {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 8px;
+  }
+  
+  .username {
+    font-size: 17px;
+    margin-bottom: 3px;
+  }
+  
+  .view-counter {
+    margin: 5px 0;
+  }
+  
+  .footer {
+    padding: 8px;
+  }
+
+  /* Make all sections more compact */
+  .spotify-section, .activities-section {
+    padding: 8px;
+    margin: 0 8px 6px;
+  }
+  
+  .player-content {
+    margin-bottom: 8px;
+  }
+  
+  .empty-activities {
+    padding: 6px;
+  }
+}
+
+/* Very Small Height Devices */
+@media (max-height: 600px) {
+  body {
+    padding: 5px 0;
+  }
+  
+  .status-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+  }
+  .avatar {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 5px;
+  }
+  
+  .status-indicator {
+    bottom: 3px;
+    right: 3px;
+    width: 10px;
+    height: 10px;
+  }
+  
+  .username {
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+  
+  .badges {
+    gap: 5px;
+    margin-bottom: 2px;
+  }
+  
+  .badge {
+    font-size: 14px;
+  }
+  
+  .footer-icon {
+    font-size: 18px;
+    min-width: 25px;
+    min-height: 25px;
+  }
+}
+
+/* Landscape Mode Optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding: 0;
+    display: block;
+  }
+  
+  .status-container {
+    max-width: 95%;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+    /* Keep your existing flex properties for landscape */
+    display: flex;
+    flex-direction: row;
+    max-height: 90vh;
+
+  }
+  
+  .status-header {
+    width: 40%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  #activities-container {
+    width: 60%;
+    padding: 10px;
+  }
+  
+  .avatar {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 8px;
+  }
+  
+  .music-control {
+    top: 10px;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+  }
+  
+  .music-control i {
+    font-size: 15px;
+  }
+  
+  .footer {
+    padding: 8px;
+    gap: 15px;
+  }
+  
+  /* Loading screen in landscape */
+  .loading-screen {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .loading-logo {
+    margin-bottom: 0;
+    width: 60px;
+    height: 60px;
+  }
+  
+  .loading-text {
+    margin-top: 0;
+  }
+  
+  .enter-button {
+    margin-top: 10px;
+  }
+}
+
+/* Fix for devices with notches or unusual screen shapes */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  .music-control {
+    top: calc(12px + env(safe-area-inset-top));
+    right: calc(12px + env(safe-area-inset-right));
+  }
+}
+
+/* Ensure content is always scrollable when needed */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix scroll issues on iOS */
+.status-container {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix any element causing horizontal overflow */
+* {
+  max-width: 100%;
+}
+
+/* Prevent any fixed elements from causing scroll issues */
+.loading-screen, .music-control, .custom-cursor {
+  position: fixed;
+}
+
+/* Handle very short heights better */
+@media (max-height: 400px) {
+  .status-container {
+    padding-bottom: 10px;
+  }
+  
+  .footer {
+    position: static;
+    padding: 5px;
+  }
+  
+  .avatar-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .avatar {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    margin-bottom: 0;
+  }
+  
+  .loading-logo {
+    width: 50px;
+    height: 50px;
+  }
+}
+/* Touch Device Improvements */
+@media (hover: none) {
+  .footer-icon:active, 
+  .badge:active, 
+  .avatar:active,
+  .music-control:active,
+  .enter-button:active {
+    opacity: 0.7;
+    transform: scale(0.92) !important;
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+  }
+
+  /* Increase touch target sizes */
+  .badge, .footer-icon, .music-control {
+    padding: 5px;
+  }
+}
+
+        /* View Counter */
+.view-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #b9bbbe;
+  margin: 10px 0;
+  gap: 8px;
+  transition: transform 0.3s ease;
+}
+
+.view-counter i {
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.view-counter:hover {
+  transform: scale(1.05);
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .view-counter {
+    font-size: 13px;
+  }
+
+  .view-counter i {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .view-counter {
+    font-size: 12px;
+  }
+
+  .view-counter i {
+    font-size: 12px;
+  }
+}
+
+
+/* Add to existing <style> section */
+
+/* Entrance Particle Explosion */
+.entrance-particle {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  animation: entranceParticleBurst 0.8s ease-out forwards;
+}
+
+@keyframes entranceParticleBurst {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.5) translate(var(--tx), var(--ty));
+    opacity: 0;
+  }
+}
+
+/* Loading Screen Shatter Effect */
+.loading-screen.shatter {
+  animation: shatter 1.2s ease-out forwards;
+}
+
+@keyframes shatter {
+  0% {
+    opacity: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  100% {
+    opacity: 0;
+    clip-path: polygon(
+      20% 30%, 40% 20%, 60% 30%, 80% 20%,
+      80% 60%, 60% 70%, 40% 60%, 20% 70%
+    );
+  }
+}
+
+/* Status Container Reveal */
+.status-container.reveal {
+  animation: containerReveal 0.8s ease-out forwards;
+}
+
+@keyframes containerReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+    filter: brightness(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Cursor Transformation */
+.custom-cursor.enter-pulse {
+  transition: transform 0.3s ease;
+}
+
+.custom-cursor.enter-pulse::before {
+  transform: translate(-50%, -50%) scale(1.5);
+  border-color: rgba(255, 255, 255, 1);
+  animation: cursorEnterPulse 0.4s ease-out;
+}
+
+@keyframes cursorEnterPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0.7;
+  }
+}
+
+/* Background Video Pulse */
+.video-background.pulse {
+  animation: videoPulse 1s ease-out;
+}
+
+@keyframes videoPulse {
+  0% {
+    filter: grayscale(100%) contrast(110%) brightness(90%);
+  }
+  50% {
+    filter: grayscale(100%) contrast(110%) brightness(110%);
+  }
+  100% {
+    filter: grayscale(100%) contrast(110%) brightness(90%);
+  }
+}
+
+
+      /* For touch devices - completely hide the custom cursor */
+@media (pointer: coarse), (hover: none) {
+  /* Hide custom cursor on touch devices */
+  .custom-cursor {
+    display: none !important;
+  }
+  
+  /* Reset cursor styles for touch devices */
+  body {
+    cursor: auto !important;
+  }
+  
+  a, button, .music-control, .footer-icon, .avatar, .badge {
+    cursor: pointer !important;
+  }
+  
+  /* Disable cursor-related animations and effects */
+  .cursor-snowflake, 
+  .custom-cursor::before, 
+  .custom-cursor::after {
+    display: none !important;
+  }
+  
+  /* Ensure all interactive elements have proper touch feedback */
+  .footer-icon:active, 
+  .badge:active, 
+  .avatar:active,
+  .music-control:active,
+  .enter-button:active {
+    opacity: 0.7;
+    transform: scale(0.92) !important;
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+  }
+  
+  /* Prevent hover effects that depend on cursor */
+  .custom-cursor.interactive::before {
+    animation: none !important;
+  }
+  
+  /* Increase touch targets for better usability */
+  .badge, .footer-icon, .music-control, .enter-button {
+    padding: 5px;
+  }
+}
+
+/* For touch devices - completely hide the custom cursor */
+@media (pointer: coarse), (hover: none) {
+  /* Hide custom cursor on touch devices */
+  .custom-cursor {
+    display: none !important;
+  }
+  
+  /* Reset cursor styles for touch devices */
+  body {
+    cursor: auto !important;
+  }
+  
+  a, button, .music-control, .footer-icon, .avatar, .badge {
+    cursor: pointer !important;
+  }
+  
+  /* Disable cursor-related animations and effects */
+  .cursor-snowflake, 
+  .custom-cursor::before, 
+  .custom-cursor::after {
+    display: none !important;
+  }
+}
+
+/* Specifically target mobile and tablet devices using max-width */
+@media (max-width: 1024px) {
+  .custom-cursor {
+    display: none !important;
+  }
+  
+  body {
+    cursor: auto !important;
+  }
+  
+  a, button, .music-control, .footer-icon, .avatar, .badge {
+    cursor: pointer !important;
+  }
+}
+
+  .tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--color-tooltip-bg);
+    color: var(--color-tooltip-text);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 0.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease; /* Smooth transition for opacity and transform */
+    user-select: none;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+  .tooltip.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0); /* Pop up effect */
+    pointer-events: auto;
+  }
+
+      </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <source src="https://www.soundjay.com/buttons/sounds/button-30.mp3" type="audio/mpeg" />
+    <audio id="entranceSound">
+      <source src="entrance-whoosh.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+      <div class="loading-logo">
+        <img src="giphy.gif" alt="Ninja" />
+      </div>
+      <div class="loading-text">
+        <div class="typing-text" id="typingText"></div>
+      </div>
+      <button class="enter-button" id="enterButton">CLICK TO ENTER</button>
+    </div>
+
+    <!-- Kupal Message -->
+    <div class="kupal-message" id="kupalMessage">KUPAL</div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="customCursor"></div>
+
+    <video
+    class="video-background"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto"
+    id="bgVideo"
+    disablePictureInPicture
+    controlsList="nodownload nofullscreen noremoteplayback"
+  >
+    <source src="guns1.mp4" type="video/mp4" />
+    Your browser does not support HTML5 video.
+  </video>
+
+    <!-- Music Control Button -->
+    <div class="music-control" id="musicControl">
+      <i class="fas fa-volume-up" id="musicIcon"></i>
+    </div>
+
+    <!-- Audio Element -->
+<audio loop id="backgroundMusic" muted>
+  <source src="guns.mp3" type="audio/mpeg" />
+  Your browser does not support the audio element.
+</audio>
+    
+
+    <div class="status-container" id="statusContainer">
+        <div class="status-header">
+            <div
+  class="avatar-container"
+  role="button"
+  tabindex="0"
+  aria-label="Copy Discord username xsythoo_ to clipboard"
+  id="avatarButton"
+  title="Click to copy Discord username"
+>
+  <img
+    id="avatar"
+    class="avatar"
+    src="/api/placeholder/256/256"
+    alt="Avatar"
+    draggable="false"
+  />
+  <div class="tooltip" id="tooltip">Copied</div>
+              <div class="status-indicator"></div>
+            </div>
+            <div class="username">
+              Xsythoo_
+              <span class="crown-icon"><i class="fas fa-crown"></i></span>
+            </div>
+
+            <div class="badges">
+              <span class="badge" style="color: #ffffff"
+                ><i class="fas fa-code"></i
+              ></span>
+              <span class="badge" style="color: #ffffff"
+                ><i class="fas fa-check"></i
+              ></span>
+              <span class="badge" style="color: #ffffff"
+                ><i class="fas fa-bolt"></i
+              ></span>
+              <span class="badge" style="color: #ffffff"
+                ><i class="fas fa-wrench"></i
+              ></span>
+            </div>
+
+            <div class="badges_one" id="badges_one">
+              <span class="badge-typing-text_one" id="typingText_description"></span>
+            </div>
+
+            <div class="view-counter">
+                <i class="fas fa-eye"></i>
+                <span id="viewCount">0</span>
+              </div>
+          </div>
+
+      <div class="spotify-section">
+        <div class="spotify-header">
+          Listening to Spotify
+          <div class="spotify-indicator"></div>
+        </div>
+        <div class="player-content">
+          <img
+            id="album-art"
+            class="album-art"
+            src="/api/placeholder/200/200"
+            alt="Album Art"
+          />
+          <div class="track-info">
+            <div id="song-title" class="song-title">Saito</div>
+            <div id="artist" class="artist">.....</div>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <div class="time">
+          <span id="current-time">0:00</span>
+          <span id="duration">0:00</span>
+        </div>
+      </div>
+
+      <div class="activities-section">
+        <div class="activities-header">
+          Active Now
+          <div class="activity-indicator"></div>
+        </div>
+        <div id="activities-container">
+          <div class="empty-activities">Loading activities...</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <a href="https://www.youtube.com/@xsythoo" target="_blank">
+          <i class="fab fa-youtube footer-icon"></i>
+        </a>
+        <a href="https://www.tiktok.com/@_sytho?lang=en" target="_blank">
+          <i class="fab fa-tiktok footer-icon"></i>
+        <a href="https://kick.com/xsythoo" target="_blank">
+          <i class="fa-brands fa-kickstarter-k footer-icon"></i>
+        </a>
+      </div>
+    </div>
+
+    <script>
+// Firebase Initialization (place this at the top of your script, before DOMContentLoaded)
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IbZ7nPpDgQYfgwaHPHMJDvnc-skYVUs",
+  authDomain: "realtime-view-counter-39162.firebaseapp.com",
+  databaseURL: "https://realtime-view-counter-39162-default-rtdb.firebaseio.com",
+  projectId: "realtime-view-counter-39162",
+  storageBucket: "realtime-view-counter-39162.firebasestorage.app",
+  messagingSenderId: "1078924563985",
+  appId: "1:1078924563985:web:6fa7bc137190bd521b83b0"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Enhanced View Counter
+function setupViewCounter() {
+  const viewCountElement = document.getElementById('viewCount');
+  if (!viewCountElement) return;
+
+  // Show loading state
+  viewCountElement.textContent = '...';
+
+  const counterRef = database.ref('viewCount');
+  
+  // Generate a unique visitor ID that lasts for the session
+  if (!sessionStorage.getItem('visitorId')) {
+    sessionStorage.setItem('visitorId', Date.now().toString());
+    // Increment counter
+    counterRef.transaction((currentCount) => {
+      return (currentCount || 0) + 1;
+    });
+  }
+
+  // Listen for real-time updates
+  counterRef.on('value', (snapshot) => {
+    const count = snapshot.val();
+    viewCountElement.textContent = count !== null ? count : '0';
+  }, (error) => {
+    console.error('View counter listener error:', error);
+    viewCountElement.textContent = 'Error';
+  });
+}
+
+// Update your DOMContentLoaded event listener to include this:
+document.addEventListener("DOMContentLoaded", () => {
+  // Existing initialization code...
+  
+  // Add this line with your other setup calls
+  setupViewCounter();
+  
+  // Rest of your initialization...
+});
+
+const discordId = "454812651394957322";
+let updateInterval;
+let musicPlaying = false;
+let backgroundMusic, musicControl, musicIcon, bgVideo, customCursor;
+let loadingScreen, typingText, enterButton, statusContainer, kupalMessage;
+
+// Typewriter Effect - Modified to show only one message
+const messages = ["Loading data..."];
+let messageIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+let typingSpeed = 100;
+
+function typeWriter() {
+  const currentMessage = messages[messageIndex];
+
+  if (isDeleting) {
+    charIndex--;
+    typingSpeed = 50;
+  } else {
+    charIndex++;
+    typingSpeed = 100;
+  }
+
+  if (typingText) {
+    typingText.textContent = currentMessage.substring(0, charIndex);
+  }
+
+  if (!isDeleting && charIndex === currentMessage.length) {
+    // Show enter button immediately after typing completes
+    if (enterButton) enterButton.classList.add("visible");
+    return;
+  }
+
+  setTimeout(typeWriter, typingSpeed);
+}
+
+// Double click handler for KUPAL message
+function setupKupalMessage() {
+  if (!kupalMessage) return;
+
+  document.addEventListener("dblclick", function (e) {
+    kupalMessage.style.left = `${e.clientX}px`;
+    kupalMessage.style.top = `${e.clientY}px`;
+    kupalMessage.classList.add("show");
+
+    setTimeout(() => {
+      kupalMessage.classList.remove("show");
+    }, 1000);
+  });
+}
+
+// Create Entrance Particle Explosion
+function createEntranceParticles(x, y) {
+  const particleCount = 15;
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement("div");
+    particle.className = "entrance-particle";
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+
+    // Random direction for particles
+    const angle = Math.random() * Math.PI * 2;
+    const distance = Math.random() * 80 + 30;
+    particle.style.setProperty("--tx", `${Math.cos(angle) * distance}px`);
+    particle.style.setProperty("--ty", `${Math.sin(angle) * distance}px`);
+
+    document.body.appendChild(particle);
+
+    particle.addEventListener("animationend", () => {
+      particle.remove();
+    });
+  }
+}
+
+// Play Entrance Sound
+function playEntranceSound() {
+  const entranceSound = document.getElementById("entranceSound");
+  if (entranceSound) {
+    entranceSound.volume = 0.4;
+    entranceSound.play().catch((e) => console.log("Entrance sound blocked:", e));
+  }
+}
+
+// Loading Screen Transition - Simplified
+function setupEnterButton() {
+  if (!enterButton) return;
+
+  enterButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (!loadingScreen || !statusContainer || !bgVideo || !customCursor) return;
+
+    // Create particle explosion at button
+    const rect = enterButton.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    createEntranceParticles(centerX, centerY);
+
+    // Play entrance sound
+    playEntranceSound();
+
+    // IMPORTANT: Play background music ONLY when enter button is clicked
+    if (!musicPlaying && backgroundMusic) {
+      // Make sure audio is unmuted before trying to play
+      backgroundMusic.muted = false;
+      const playPromise = backgroundMusic.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            musicPlaying = true;
+            backgroundMusic.volume = 0.5; // Set initial volume
+            updateMusicButton(); // Update button icon and state
+            console.log("Background music started via enter button");
+          })
+          .catch((error) => {
+            console.error("Audio playback failed on enter:", error);
+            if (musicControl) {
+              musicControl.title = "Click music button to enable audio";
+              setTimeout(() => {
+                musicControl.title = "";
+              }, 3000);
+            }
+          });
+      }
+    }
+
+    // Play background video
+    if (bgVideo) {
+      bgVideo.play().catch((e) => console.log("Video playback failed on enter:", e));
+    }
+
+    // Cursor transformation
+    customCursor.classList.add("enter-pulse");
+    setTimeout(() => {
+      customCursor.classList.remove("enter-pulse");
+    }, 400);
+
+    // Apply shatter effect to loading screen
+    loadingScreen.classList.add("shatter");
+
+    // Pulse background video
+    bgVideo.classList.add("pulse");
+
+    // Reveal status container
+    setTimeout(() => {
+      loadingScreen.style.display = "none";
+      statusContainer.classList.add("visible", "reveal");
+    }, 1000);
+
+    // Prevent footer links from triggering kupal message
+    document.querySelectorAll(".footer a").forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
+  });
+}
+
+// Add similar prevention for footer icons
+document.querySelectorAll('.footer a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+});
+
+// Custom Cursor Movement
+function setupCustomCursor() {
+  if (!customCursor || isTouchDevice()) return;
+
+  document.addEventListener("mousemove", (e) => {
+    customCursor.style.left = `${e.clientX}px`;
+    customCursor.style.top = `${e.clientY}px`;
+  });
+
+  // Cursor Interaction State
+  [
+    "a",
+    "button",
+    ".music-control",
+    ".footer-icon",
+    ".avatar",
+    ".badge",
+  ].forEach((selector) => {
+    document.querySelectorAll(selector).forEach((el) => {
+      el.addEventListener("mouseenter", () => {
+        customCursor.classList.add("interactive");
+      });
+      el.addEventListener("mouseleave", () => {
+        customCursor.classList.remove("interactive");
+      });
+    });
+  });
+
+  // Hide cursor on leave
+  document.addEventListener("mouseleave", () => {
+    customCursor.style.display = "none";
+  });
+  document.addEventListener("mouseenter", () => {
+    customCursor.style.display = "block";
+  });
+}
+
+// Initialize snow animation
+function createSnowflakes() {
+  const snowflakeCount = 100;
+
+  for (let i = 0; i < snowflakeCount; i++) {
+    const snowflake = document.createElement("div");
+    snowflake.className = "snowflake";
+
+    const size = Math.random() * 4 + 2;
+    const left = Math.random() * 100;
+    const animationDuration = Math.random() * 10 + 5;
+    const delay = Math.random() * 5;
+
+    snowflake.style.width = `${size}px`;
+    snowflake.style.height = `${size}px`;
+    snowflake.style.left = `${left}vw`;
+    snowflake.style.top = `-10px`;
+    snowflake.style.opacity = Math.random() * 0.6 + 0.2;
+    snowflake.style.animationDuration = `${animationDuration}s`;
+    snowflake.style.animationDelay = `${delay}s`;
+
+    document.body.appendChild(snowflake);
+  }
+}
+
+// Maintain snowfall
+function maintainSnowfall() {
+  setInterval(() => {
+    const existingSnowflakes = document.querySelectorAll(".snowflake");
+    if (existingSnowflakes.length > 150) {
+      for (let i = 0; i < 25; i++) {
+        if (existingSnowflakes[i]) {
+          existingSnowflakes[i].remove();
+        }
+      }
+    }
+
+    for (let i = 0; i < 25; i++) {
+      const snowflake = document.createElement("div");
+      snowflake.className = "snowflake";
+
+      const size = Math.random() * 4 + 2;
+      const left = Math.random() * 100;
+      const animationDuration = Math.random() * 10 + 5;
+
+      snowflake.style.width = `${size}px`;
+      snowflake.style.height = `${size}px`;
+      snowflake.style.left = `${left}vw`;
+      snowflake.style.top = `-10px`;
+      snowflake.style.opacity = Math.random() * 0.6 + 0.2;
+      snowflake.style.animationDuration = `${animationDuration}s`;
+      snowflake.style.backgroundColor = "white";
+
+      document.body.appendChild(snowflake);
+    }
+  }, 10000);
+}
+
+// Cursor Snowflake Trail
+function createCursorSnowflake(x, y) {
+  const snowflake = document.createElement("div");
+  snowflake.className = "cursor-snowflake";
+  snowflake.style.left = `${x}px`;
+  snowflake.style.top = `${y}px`;
+
+  const angle = Math.random() * Math.PI * 2;
+  const distance = Math.random() * 20 + 5;
+  snowflake.style.transform = `translate(${
+    Math.cos(angle) * distance
+  }px, ${Math.sin(angle) * distance}px)`;
+
+  document.body.appendChild(snowflake);
+
+  snowflake.addEventListener("animationend", () => {
+    snowflake.remove();
+  });
+}
+
+function setupCursorTrail() {
+  let lastMouseMove = 0;
+  document.addEventListener("mousemove", (e) => {
+    const now = Date.now();
+    if (now - lastMouseMove > 50) {
+      createCursorSnowflake(e.clientX, e.clientY);
+      lastMouseMove = now;
+    }
+  });
+}
+
+// Click Particle Effect
+function createClickParticles(x, y) {
+  const particleCount = 5;
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement("div");
+    particle.className = "click-particle";
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = Math.random() * 30 + 10;
+    particle.style.transform = `translate(${
+      Math.cos(angle) * distance
+    }px, ${Math.sin(angle) * distance}px)`;
+
+    document.body.appendChild(particle);
+
+    particle.addEventListener("animationend", () => {
+      particle.remove();
+    });
+  }
+}
+
+function setupClickEffects() {
+  document.addEventListener("click", (e) => {
+    createClickParticles(e.clientX, e.clientY);
+  });
+}
+
+// Ripple Effect on Hover
+function createRipple(e, element) {
+  const ripple = document.createElement("div");
+  ripple.className = "ripple";
+  element.appendChild(ripple);
+
+  const rect = element.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  ripple.style.width = ripple.style.height = `${size}px`;
+  ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+  ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+
+  ripple.addEventListener("animationend", () => {
+    ripple.remove();
+  });
+}
+
+function setupRippleEffects() {
+  [".avatar", ".badge", ".footer-icon"].forEach((selector) => {
+    document.querySelectorAll(selector).forEach((el) => {
+      el.addEventListener("mouseenter", (e) => {
+        createRipple(e, el);
+      });
+    });
+  });
+}
+
+// Background Color Shift
+function setupColorShift() {
+  document.addEventListener("click", () => {
+    document.body.classList.add("color-shift", "color-shift-active");
+    setTimeout(() => {
+      document.body.classList.remove("color-shift-active");
+      setTimeout(() => {
+        document.body.classList.remove("color-shift");
+      }, 500);
+    }, 500);
+  });
+}
+
+// Parallax Effect
+function setupParallax() {
+  if (!statusContainer) return;
+
+  document.addEventListener("mousemove", (e) => {
+    const rect = statusContainer.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const moveX = (e.clientX - centerX) / 50;
+    const moveY = (e.clientY - centerY) / 50;
+
+    statusContainer.classList.add("parallax");
+    statusContainer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+  });
+
+  document.addEventListener("mouseleave", () => {
+    statusContainer.style.transform = "translate(0, 0)";
+  });
+}
+
+// Glow Pulse on Music Control
+function setupMusicControlEffects() {
+  if (!musicControl) return;
+
+  musicControl.addEventListener("click", (e) => {
+    const glow = document.createElement("div");
+    glow.className = "glow-pulse";
+    glow.style.left = `${e.clientX}px`;
+    glow.style.top = `${e.clientY}px`;
+    document.body.appendChild(glow);
+
+    glow.addEventListener("animationend", () => {
+      glow.remove();
+    });
+  });
+}
+
+// Badge Tooltips
+function setupBadgeTooltips() {
+  const badgeDescriptions = {
+    code: "Developer",
+    check: "Verified",
+    bolt: "Contributor",
+    wrench: "Moderator",
+  };
+
+  document.querySelectorAll(".badge").forEach((badge, index) => {
+    const iconClass = badge.querySelector("i")?.className;
+    if (!iconClass) return;
+
+    const key = iconClass.includes("code")
+      ? "code"
+      : iconClass.includes("check")
+      ? "check"
+      : iconClass.includes("bolt")
+      ? "bolt"
+      : "wrench";
+
+    const tooltip = document.createElement("span");
+    tooltip.className = "badge-tooltip";
+    tooltip.textContent = badgeDescriptions[key];
+    badge.appendChild(tooltip);
+  });
+}
+
+// Mobile Touch Gestures
+function setupTouchGestures() {
+  let touchStartX = 0;
+  document.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  document.addEventListener("touchend", (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const swipeDistance = touchEndX - touchStartX;
+
+    if (Math.abs(swipeDistance) > 100 && swipeDistance < 0) {
+      toggleMusic();
+    }
+  });
+}
+
+// Music Control Functionality
+function fadeVolume(startVol, endVol, callback) {
+  const duration = 500;
+  const startTime = performance.now();
+  const step = (endVol - startVol) / duration;
+
+  function updateVolume(timestamp) {
+    const elapsed = timestamp - startTime;
+    if (elapsed >= duration) {
+      backgroundMusic.volume = endVol;
+      if (callback) callback();
+      return;
+    }
+    const newVol = startVol + step * elapsed;
+    backgroundMusic.volume = Math.max(0, Math.min(1, newVol));
+    requestAnimationFrame(updateVolume);
+  }
+
+  requestAnimationFrame(updateVolume);
+}
+
+// Initialize music in stopped state Popper
+function initializeAudio() {
+  if (!backgroundMusic) return;
+  
+  // Always start with music completely stopped
+  backgroundMusic.pause();
+  backgroundMusic.currentTime = 0;
+  backgroundMusic.volume = 0.5;
+  backgroundMusic.muted = true; // Start muted to help with autoplay restrictions
+}
+
+function updateMusicButton() {
+  if (!musicIcon || !musicControl) return;
+
+  if (musicPlaying) {
+    musicIcon.className = "fas fa-volume-up";
+    musicControl.classList.add("playing");
+  } else {
+    musicIcon.className = "fas fa-volume-mute";
+    musicControl.classList.remove("playing");
+  }
+}
+
+function toggleMusic() {
+  if (!backgroundMusic || !musicControl) return;
+
+  if (musicPlaying) {
+    fadeVolume(backgroundMusic.volume, 0, () => {
+      backgroundMusic.pause();
+      backgroundMusic.muted = true; // Ensure muted state
+      musicPlaying = false;
+      updateMusicButton();
+      console.log("Music paused and muted");
+    });
+  } else {
+    backgroundMusic.muted = false; // Unmute before playing
+    const playPromise = backgroundMusic.play();
+    
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          musicPlaying = true;
+          updateMusicButton();
+          fadeVolume(0, 0.5);
+          console.log("Music playing successfully");
+        })
+        .catch((error) => {
+          console.error("Audio playback failed:", error);
+          musicControl.title = "Tap again to enable audio";
+          setTimeout(() => {
+            musicControl.title = "";
+          }, 3000);
+        });
+    }
+  }
+}
+
+function setupMusicControl() {
+  if (!backgroundMusic || !musicControl || !musicIcon) return;
+
+  // Set up click listener for the music control button
+  musicControl.addEventListener("click", (e) => {
+    e.preventDefault(); // Prevent default to avoid conflicts
+    toggleMusic();
+  });
+
+  // Add touchstart listener for mobile compatibility
+  musicControl.addEventListener("touchstart", (e) => {
+    e.preventDefault(); // Prevent default touch behavior
+    toggleMusic();
+    console.log("Music control touched");
+  });
+  
+  // Initialize audio but don't autoplay
+  initializeAudio();
+  musicPlaying = false;
+  updateMusicButton();
+}
+
+// Fetch Discord Data
+async function fetchDiscordData() {
+  try {
+    const socket = new WebSocket("wss://api.lanyard.rest/socket");
+
+    socket.addEventListener("open", () => {
+      socket.send(
+        JSON.stringify({
+          op: 2,
+          d: {
+            subscribe_to_id: discordId,
+          },
+        })
+      );
+    });
+
+    socket.addEventListener("message", ({ data }) => {
+      const parsedData = JSON.parse(data);
+
+      if (
+        parsedData.t === "INIT_STATE" ||
+        parsedData.t === "PRESENCE_UPDATE"
+      ) {
+        const discord = parsedData.d;
+        updateUserInfo(discord);
+        updateSpotifyInfo(discord);
+        updateAllActivities(discord);
+      }
+    });
+
+    socket.addEventListener("error", (error) => {
+      console.error("WebSocket error:", error);
+      setTimeout(fetchDiscordData, 5000);
+    });
+
+    socket.addEventListener("close", () => {
+      setTimeout(fetchDiscordData, 5000);
+    });
+  } catch (error) {
+    console.error("Error fetching Discord data:", error);
+    setTimeout(fetchDiscordData, 10000);
+  }
+}
+
+function updateUserInfo(discord) {
+  if (discord.discord_user && discord.discord_user.avatar) {
+    const avatar = document.getElementById("avatar");
+    if (avatar) {
+      avatar.src = `https://cdn.discordapp.com/avatars/${discordId}/${discord.discord_user.avatar}?size=256`;
+    }
+  }
+
+  if (discord.discord_status) {
+    const statusElement = document.querySelector(".status-indicator");
+    if (statusElement) {
+      switch (discord.discord_status) {
+        case "online":
+          statusElement.style.backgroundColor = "#43b581";
+          break;
+        case "idle":
+          statusElement.style.backgroundColor = "#faa61a";
+          break;
+        case "dnd":
+          statusElement.style.backgroundColor = "#f04747";
+          break;
+        case "offline":
+          statusElement.style.backgroundColor = "#747f8d";
+          break;
+      }
+    }
+  }
+
+  if (discord.activities) {
+    const customStatus = discord.activities.find((a) => a.type === 4);
+    if (customStatus && customStatus.state) {
+      const statusText = document.querySelector(".status-text");
+    }
+  }
+}
+
+function updateSpotifyInfo(discord) {
+  const spotifySection = document.querySelector(".spotify-section");
+  const spotifyActivity = discord.activities?.find(
+    (a) => a.spotify || a.name === "Spotify"
+  );
+  const spotifyData = discord.spotify;
+
+  if (spotifyActivity && spotifyData) {
+    spotifySection.style.display = "block";
+
+    const songTitle = document.getElementById("song-title");
+    const artist = document.getElementById("artist");
+    const albumArt = document.getElementById("album-art");
+
+    if (songTitle) {
+      songTitle.textContent =
+        spotifyData.song ||
+        spotifyActivity.details ||
+        "[Solo-Leveling]SymphonicSuite-...";
+    }
+
+    if (artist) {
+      artist.textContent =
+        spotifyData.artist || spotifyActivity.state || "Sawano Hiroyuki";
+    }
+
+    if (albumArt) {
+      if (spotifyData.album_art_url) {
+        albumArt.src = spotifyData.album_art_url;
+      } else if (spotifyActivity.assets?.large_image) {
+        const imageId = spotifyActivity.assets.large_image.replace(
+          "spotify:",
+          ""
+        );
+        albumArt.src = `https://i.scdn.co/image/${imageId}`;
+      }
+    }
+
+    updateProgressAndTime(spotifyActivity);
+  } else {
+    spotifySection.style.display = "none";
+  }
+}
+
+function updateProgressAndTime(spotifyActivity) {
+  if (
+    spotifyActivity.timestamps?.start &&
+    spotifyActivity.timestamps?.end
+  ) {
+    const start = spotifyActivity.timestamps.start;
+    const end = spotifyActivity.timestamps.end;
+    const now = Date.now();
+
+    if (now < end) {
+      const progress = (now - start) / (end - start);
+      const progressPercent = Math.min(100, Math.max(0, progress * 100));
+      const progressBar = document.getElementById("progress-bar");
+      if (progressBar) progressBar.style.width = `${progressPercent}%`;
+
+      const currentTime = document.getElementById("current-time");
+      const duration = document.getElementById("duration");
+
+      if (currentTime) currentTime.textContent = formatTime(now - start);
+      if (duration) duration.textContent = formatTime(end - start);
+    }
+  }
+}
+
+function updateAllActivities(discord) {
+  const activitiesContainer = document.getElementById(
+    "activities-container"
+  );
+  const activitiesSection = document.querySelector(".activities-section");
+
+  if (!activitiesContainer || !activitiesSection) return;
+
+  const activities = discord.activities || [];
+  const displayableActivities = activities.filter(
+    (activity) =>
+      activity.type !== 4 &&
+      activity.name !== "Spotify" &&
+      !activity.spotify
+  );
+
+  if (displayableActivities.length === 0) {
+    activitiesSection.style.display = "none";
+    return;
+  }
+
+  activitiesSection.style.display = "block";
+
+  let activitiesHTML = "";
+
+  displayableActivities.forEach((activity) => {
+    let iconHTML = "";
+    if (activity.assets && activity.assets.large_image) {
+      let imageUrl;
+      if (activity.assets.large_image.startsWith("mp:")) {
+        const assetId = activity.assets.large_image.replace("mp:", "");
+        imageUrl = `https://media.discordapp.net/${assetId}`;
+      } else {
+        imageUrl = `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
+      }
+      iconHTML = `<img src="${imageUrl}" alt="${activity.name}" style="width: 100%; height: 100%; border-radius: 6px;">`;
+    } else {
+      let iconClass = "fas fa-kickstarter-k";
+
+      if (activity.type === 0) iconClass = "fas fa-kickstarter-k";
+      else if (activity.type === 1) iconClass = "fas fa-broadcast-tower";
+      else if (activity.type === 2) iconClass = "fas fa-headphones";
+      else if (activity.type === 3) iconClass = "fas fa-tv";
+      else if (activity.type === 5) iconClass = "fas fa-users";
+
+      iconHTML = `<i class="${iconClass}"></i>`;
+    }
+
+    let elapsedHTML = "";
+    if (activity.timestamps && activity.timestamps.start) {
+      const startTime = new Date(activity.timestamps.start);
+      const now = new Date();
+      const elapsed = now - startTime;
+
+      const hours = Math.floor(elapsed / 3600000);
+      const minutes = Math.floor((elapsed % 3600000) / 60000);
+
+      let elapsedStr = "";
+      if (hours > 0) {
+        elapsedStr = `${hours} hour${hours !== 1 ? "s" : ""} `;
+      }
+      elapsedStr += `${minutes} minute${minutes !== 1 ? "s" : ""}`;
+
+      elapsedHTML = `<div class="activity-elapsed">${elapsedStr} elapsed</div>`;
+    }
+
+    let details = activity.details || "";
+    let state = activity.state || "";
+
+    activitiesHTML += `
+  <div class="activity-item">
+    <div class="activity-icon">
+      ${iconHTML}
+    </div>
+    <div class="activity-info">
+      <div class="activity-name">${activity.name}</div>
+      ${details ? `<div class="activity-details">${details}</div>` : ""}
+      ${state ? `<div class="activity-state">${state}</div>` : ""}
+      ${elapsedHTML}
+    </div>
+  </div>
+`;
+  });
+
+  activitiesContainer.innerHTML = activitiesHTML;
+}
+
+function formatTime(ms) {
+  const date = new Date(ms);
+  const mins = date.getUTCMinutes();
+  const secs = date.getUTCSeconds();
+  return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+}
+
+function startUpdateInterval() {
+  clearInterval(updateInterval);
+  updateInterval = setInterval(() => {
+    const progressBar = document.getElementById("progress-bar");
+    if (!progressBar) return;
+
+    const currentWidth = parseFloat(progressBar.style.width) || 45;
+    if (currentWidth < 100) {
+      const newWidth = currentWidth + 0.1;
+      progressBar.style.width = `${newWidth}%`;
+
+      const currentTime = document.getElementById("current-time");
+      const duration = document.getElementById("duration");
+
+      if (currentTime && duration) {
+        const currentTimeParts = currentTime.textContent.split(":");
+        let mins = parseInt(currentTimeParts[0]);
+        let secs = parseInt(currentTimeParts[1]);
+
+        secs += 1;
+        if (secs >= 60) {
+          secs = 0;
+          mins += 1;
+        }
+
+        currentTime.textContent = `${mins}:${
+          secs < 10 ? "0" : ""
+        }${secs}`;
+      }
+    }
+  }, 1000);
+}
+
+// Keyboard Shortcuts
+function setupKeyboardShortcuts() {
+  document.addEventListener("keydown", (event) => {
+    switch (event.key.toLowerCase()) {
+      case "m":
+        toggleMusic();
+        break;
+      case "v":
+        if (bgVideo) bgVideo.paused ? bgVideo.play() : bgVideo.pause();
+        break;
+      case "s":
+        const snowflakes = document.querySelectorAll(".snowflake");
+        if (snowflakes.length > 0) {
+          snowflakes.forEach((snowflake) => snowflake.remove());
+        } else {
+          createSnowflakes();
+        }
+        break;
+    }
+  });
+}
+
+function animateTabTitle() {
+  const animations = [
+    "X",
+    "Xs",
+    "Xsy",
+    "Xsyt",
+    "Xsyth",
+    "Xsytho",
+    "Xsythoo",
+    "Xsythoo_",
+  ];
+  let index = 0;
+  setInterval(() => {
+    document.title = animations[index];
+    index = (index + 1) % animations.length;
+  }, 400);
+}
+
+// Detect touch devices and remove cursor-related functionality
+function isTouchDevice() {
+  return ('ontouchstart' in window) || 
+         (navigator.maxTouchPoints > 0) || 
+         (navigator.msMaxTouchPoints > 0);
+}
+
+// Initialize everything after DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  // Existing initialization code
+  backgroundMusic = document.getElementById("backgroundMusic");
+  musicControl = document.getElementById("musicControl");
+  musicIcon = document.getElementById("musicIcon");
+  bgVideo = document.getElementById("bgVideo");
+  customCursor = document.getElementById("customCursor");
+  loadingScreen = document.getElementById("loadingScreen");
+  typingText = document.getElementById("typingText");
+  enterButton = document.getElementById("enterButton");
+  statusContainer = document.getElementById("statusContainer");
+  kupalMessage = document.getElementById("kupalMessage");
+
+  // Setup all functionality
+  setupKupalMessage();
+  setupEnterButton();
+  setupCustomCursor();
+  setupCursorTrail();
+  setupClickEffects();
+  setupRippleEffects();
+  setupColorShift();
+  setupParallax();
+  setupMusicControlEffects();
+  setupBadgeTooltips();
+  setupTouchGestures();
+  setupKeyboardShortcuts();
+  setupMusicControl(); // This sets up the music control but doesn't play it
+
+  // Start initial effects
+  setTimeout(typeWriter, 1000);
+  fetchDiscordData();
+  startUpdateInterval();
+  createSnowflakes();
+  maintainSnowfall();
+
+  animateTabTitle();
+
+  // Removed autoplay attempts to prevent NotAllowedError
+  // Audio and video playback will be triggered by user interactions (enter button or music control)
+});
+
+// Advanced Typing Animation Function
+function advancedTypingAnimation(elementId, texts, options = {}) {
+    // Default options
+    const defaults = {
+        typeSpeed: 50,           // Typing speed in milliseconds
+        deleteSpeed: 30,         // Deleting speed in milliseconds
+        delayBetweenTexts: 2000, // Delay before starting next text
+        loop: true,              // Whether to loop the animation
+        showCursor: true,        // Whether to show blinking cursor
+        cursorChar: '|',        // Cursor character
+        cursorBlinkSpeed: 500,   // Cursor blink speed in milliseconds
+        onComplete: null         // Callback when animation completes (only if loop is false)
+    };
+
+    // Merge options with defaults
+    const settings = {...defaults, ...options};
+
+    // Get the target element
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // Add cursor if enabled
+    if (settings.showCursor) {
+        const cursor = document.createElement('span');
+        cursor.className = 'typing-cursor';
+        cursor.textContent = settings.cursorChar;
+        element.appendChild(cursor);
+        
+        // Add blinking animation
+        setInterval(() => {
+            cursor.style.visibility = cursor.style.visibility === 'hidden' ? 'visible' : 'hidden';
+        }, settings.cursorBlinkSpeed);
+    }
+
+    let currentTextIndex = 0;
+    let isDeleting = false;
+    let currentText = '';
+    let typingTimeout;
+
+    // Main typing function
+    const type = () => {
+        const fullText = texts[currentTextIndex];
+        
+        if (isDeleting) {
+            // Delete text
+            currentText = fullText.substring(0, currentText.length - 1);
+        } else {
+            // Type text
+            currentText = fullText.substring(0, currentText.length + 1);
+        }
+
+        // Update element (without cursor)
+        if (settings.showCursor) {
+            element.innerHTML = currentText + `<span class="typing-cursor">${settings.cursorChar}</span>`;
+        } else {
+            element.textContent = currentText;
+        }
+
+        // Determine typing speed
+        let typeSpeed = settings.typeSpeed;
+        if (isDeleting) {
+            typeSpeed = settings.deleteSpeed;
+        }
+
+        // Check if current text is complete
+        if (!isDeleting && currentText === fullText) {
+            // Pause at end of text
+            typeSpeed = settings.delayBetweenTexts;
+            isDeleting = true;
+        } else if (isDeleting && currentText === '') {
+            // Move to next text when deleted
+            isDeleting = false;
+            currentTextIndex++;
+            
+            // Check if we've reached the end of the array
+            if (currentTextIndex >= texts.length) {
+                if (settings.loop) {
+                    currentTextIndex = 0;
+                } else {
+                    // Animation complete
+                    if (typeof settings.onComplete === 'function') {
+                        settings.onComplete();
+                    }
+                    return;
+                }
+            }
+        }
+
+        // Continue typing
+        typingTimeout = setTimeout(type, typeSpeed);
+    };
+
+    // Start typing
+    type();
+
+    // Return a function to stop the animation
+    return () => {
+        clearTimeout(typingTimeout);
+        if (settings.showCursor) {
+            const cursor = element.querySelector('.typing-cursor');
+            if (cursor) {
+                cursor.remove();
+            }
+        }
+    };
+}
+
+// Example usage:
+advancedTypingAnimation('typingText_description', 
+  ["KUPAL KABA?", "GAGO KABA?", "OKAY."],
+  {
+    typeSpeed: 70,
+    deleteSpeed: 40,
+    loop: true
+  }
+);
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Create a separate container for snowflakes to ensure they don't affect other elements
+  const snowflakeContainer = document.createElement('div');
+  snowflakeContainer.id = 'snowflake-container';
+  snowflakeContainer.style.position = 'fixed';
+  snowflakeContainer.style.top = '0';
+  snowflakeContainer.style.left = '0';
+  snowflakeContainer.style.width = '100%';
+  snowflakeContainer.style.height = '100%';
+  snowflakeContainer.style.pointerEvents = 'none';
+  snowflakeContainer.style.zIndex = '1001';
+  snowflakeContainer.style.overflow = 'hidden';
+  document.body.appendChild(snowflakeContainer);
+  
+  document.addEventListener('mousemove', function(e) {
+    // Skip creating snowflakes when over status container
+    if (e.target.closest('.status-container')) {
+      return;
+    }
+    
+    // Create 3-5 snowflakes per mouse movement
+    const flakeCount = Math.floor(Math.random() * 3) + 3;
+    
+    for (let i = 0; i < flakeCount; i++) {
+      setTimeout(() => {
+        createSnowflake(e.clientX, e.clientY);
+      }, i * 20); // Slight delay between each flake
+    }
+  });
+  
+  function createSnowflake(x, y) {
+    const snowflake = document.createElement('div');
+    
+    // Add base class
+    snowflake.classList.add('cursor-snowflake');
+    
+    // Add random offset from cursor position
+    const offsetX = (Math.random() - 0.5) * 15;
+    const offsetY = (Math.random() - 0.5) * 15;
+    
+    // Set position
+    snowflake.style.left = (x + offsetX) + 'px';
+    snowflake.style.top = (y + offsetY) + 'px';
+    
+    // Randomly select snowflake type
+    const flakeTypes = ['tiny', 'small', 'medium', 'large', 'crystal', 'sparkle'];
+    const selectedType = flakeTypes[Math.floor(Math.random() * flakeTypes.length)];
+    snowflake.classList.add(selectedType);
+    
+    // Randomly select animation
+    const animations = ['cursorSnowflakeFade', 'cursorSnowflakeDrift', 'cursorSnowflakeSpin'];
+    snowflake.style.animation = `${animations[Math.floor(Math.random() * animations.length)]} ${1.5 + Math.random()}s ease-out forwards`;
+    
+    // Add to the dedicated container instead of body
+    snowflakeContainer.appendChild(snowflake);
+    
+    // Remove after animation completes
+    setTimeout(() => {
+      if (snowflake.parentNode === snowflakeContainer) {
+        snowflakeContainer.removeChild(snowflake);
+      }
+    }, 3000);
+  }
+});
+
+const avatarButton = document.getElementById('avatarButton');
+const tooltip = document.getElementById('tooltip');
+const discordUsername = 'xsythoo_';
+function copyUsername() {
+  if (!navigator.clipboard) {
+    const textarea = document.createElement('textarea');
+    textarea.value = discordUsername;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      console.error('Fallback: Copy failed', err);
+    }
+    document.body.removeChild(textarea);
+  } else {
+    navigator.clipboard.writeText(discordUsername).catch(e => {
+      console.error('Clipboard copy failed', e);
+    });
+  }
+}
+function showTooltip() {
+  tooltip.classList.add('show');
+  setTimeout(() => {
+    tooltip.classList.remove('show');
+  }, 1500);
+}
+avatarButton.addEventListener('click', () => {
+  copyUsername();
+  showTooltip();
+});
+avatarButton.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    copyUsername();
+    showTooltip();
+  }
+});
+    </script>
+
+
+  </body>
+</html>
