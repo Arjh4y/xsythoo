@@ -266,9 +266,8 @@
           }
         }
   
-        /* Video Background */
-        .video-background {
-  filter: grayscale(100%) contrast(110%) brightness(90%);
+.video-background {
+  filter: blur(5px);
   object-fit: cover;
   object-position: center;
   width: 100%;
@@ -280,7 +279,11 @@
   pointer-events: none; /* Already present, kept for clarity */
   user-select: none; /* Prevent selection */
   touch-action: none; /* Prevent touch interactions */
+  transition: filter 0.4s ease-in-out;
 }
+
+
+
         /* Snow Animation */
         .snowflake {
           position: fixed;
@@ -722,7 +725,6 @@
     border-radius: 50%;
     object-fit: cover;
     border: 5px solid rgba(26, 26, 26, 0.7);
-    filter: grayscale(100%);
     transition: all 0.3s ease;
     position: relative;
     animation: borderBeat 1.5s infinite ease-out;
@@ -1723,9 +1725,32 @@ html, body {
   }
 }
 
+  .tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--color-tooltip-bg);
+    color: var(--color-tooltip-text);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 0.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease; /* Smooth transition for opacity and transform */
+    user-select: none;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+  .tooltip.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0); /* Pop up effect */
+    pointer-events: auto;
+  }
 
       </style>
-    </style>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -1765,7 +1790,7 @@ html, body {
     disablePictureInPicture
     controlsList="nodownload nofullscreen noremoteplayback"
   >
-    <source src="SAITO1.mp4" type="video/mp4" />
+    <source src="guns.mp4" type="video/mp4" />
     Your browser does not support HTML5 video.
   </video>
 
@@ -1776,20 +1801,29 @@ html, body {
 
     <!-- Audio Element -->
 <audio loop id="backgroundMusic" muted>
-  <source src="he.mp3" type="audio/mpeg" />
+  <source src="guns.mp4" type="audio/mpeg" />
   Your browser does not support the audio element.
 </audio>
     
 
     <div class="status-container" id="statusContainer">
         <div class="status-header">
-            <div class="avatar-container">
-              <img
-                id="avatar"
-                class="avatar"
-                src="/api/placeholder/256/256"
-                alt="Avatar"
-              />
+            <div
+  class="avatar-container"
+  role="button"
+  tabindex="0"
+  aria-label="Copy Discord username xsythoo_ to clipboard"
+  id="avatarButton"
+  title="Click to copy Discord username"
+>
+  <img
+    id="avatar"
+    class="avatar"
+    src="/api/placeholder/256/256"
+    alt="Avatar"
+    draggable="false"
+  />
+  <div class="tooltip" id="tooltip">Copied</div>
               <div class="status-indicator"></div>
             </div>
             <div class="username">
@@ -3001,7 +3035,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //   }
 // );
 advancedTypingAnimation('typingText_description', 
-  ["KUPAL KABA", "GAGI KABA", "OKAY."],
+  ["KUPAL KABA?", "GAGO KABA?", "OKAY."],
   {
     typeSpeed: 70,
     deleteSpeed: 40,
@@ -3076,6 +3110,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 3000);
   }
 });
+
+ const avatarButton = document.getElementById('avatarButton');
+  const tooltip = document.getElementById('tooltip');
+  const discordUsername = 'xsythoo_';
+  function copyUsername() {
+    if (!navigator.clipboard) {
+      const textarea = document.createElement('textarea');
+      textarea.value = discordUsername;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Fallback: Copy failed', err);
+      }
+      document.body.removeChild(textarea);
+    } else {
+      navigator.clipboard.writeText(discordUsername).catch(e => {
+        console.error('Clipboard copy failed', e);
+      });
+    }
+  }
+  function showTooltip() {
+    tooltip.classList.add('show');
+    setTimeout(() => {
+      tooltip.classList.remove('show');
+    }, 1500);
+  }
+  avatarButton.addEventListener('click', () => {
+    copyUsername();
+    showTooltip();
+  });
+  avatarButton.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      copyUsername();
+      showTooltip();
+    }
+  });
 
     </script>
 
