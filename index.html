@@ -2073,17 +2073,23 @@ function setupEnterButton() {
             musicPlaying = true;
             backgroundMusic.volume = 0.5; // Set initial volume
             updateMusicButton(); // Update button icon and state
+            console.log("Background music started via enter button");
           })
           .catch((error) => {
-            console.error("Audio playback failed:", error);
+            console.error("Audio playback failed on enter:", error);
             if (musicControl) {
-              musicControl.title = "Click again to enable audio";
+              musicControl.title = "Click music button to enable audio";
               setTimeout(() => {
                 musicControl.title = "";
               }, 3000);
             }
           });
       }
+    }
+
+    // Play background video
+    if (bgVideo) {
+      bgVideo.play().catch((e) => console.log("Video playback failed on enter:", e));
     }
 
     // Cursor transformation
@@ -2419,7 +2425,7 @@ function fadeVolume(startVol, endVol, callback) {
   requestAnimationFrame(updateVolume);
 }
 
-// Initialize music in stopped state
+// Initialize music in stopped state Popper
 function initializeAudio() {
   if (!backgroundMusic) return;
   
@@ -2858,22 +2864,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   animateTabTitle();
 
-  // Attempt to play media
-  if (bgVideo) {
-    bgVideo.play().catch((e) => console.log("Video autoplay prevented:", e));
-  }
-
-  if (backgroundMusic) {
-    backgroundMusic.play().catch((e) => {
-      console.log("Audio autoplay prevented:", e);
-      if (musicControl) {
-        musicControl.title = "Click to enable audio";
-        setTimeout(() => {
-          musicControl.title = "";
-        }, 3000);
-      }
-    });
-  }
+  // Removed autoplay attempts to prevent NotAllowedError
+  // Audio and video playback will be triggered by user interactions (enter button or music control)
 });
 
 // Advanced Typing Animation Function
