@@ -1756,7 +1756,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       />
     </head>
-    <body oncontextmenu="return false">
+    <body>
       <source src="https://www.soundjay.com/buttons/sounds/button-30.mp3" type="audio/mpeg" />
       <audio id="entranceSound">
         <source src="entrance-whoosh.mp3" type="audio/mpeg" />
@@ -3164,7 +3164,381 @@
         showTooltip();
       }
     });
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
 
+
+  // Mobile-friendly audio initialization and management
+class MobileAudioManager {
+  constructor() {
+    this.isMobile = this.detectMobile();
+    this.audioContext = null;
+    this.audioUnlocked = false;
+    this.backgroundMusic = null;
+    this.musicPlaying = false;
+    this.musicControl = null;
+    this.musicIcon = null;
+    this.enterSound = null;
+    
+    this.init();
+  }
+  
+  detectMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           'ontouchstart' in window ||
+           navigator.maxTouchPoints > 0 ||
+           navigator.msMaxTouchPoints > 0;
+  }
+  
+  init() {
+    this.backgroundMusic = document.getElementById("backgroundMusic");
+    this.musicControl = document.getElementById("musicControl");
+    this.musicIcon = document.getElementById("musicIcon");
+    this.enterSound = document.getElementById("entranceSound");
+    
+    if (this.isMobile) {
+      this.setupMobileAudio();
+    } else {
+      this.setupDesktopAudio();
+    }
+    
+    this.setupMusicControl();
+  }
+  
+  setupMobileAudio() {
+    // Create audio context for mobile
+    this.createAudioContext();
+    
+    // Set up audio elements for mobile
+    if (this.backgroundMusic) {
+      this.backgroundMusic.preload = "none"; // Don't preload on mobile
+      this.backgroundMusic.muted = true;
+      this.backgroundMusic.volume = 0.5;
+      
+      // Add mobile-specific attributes
+      this.backgroundMusic.setAttribute('playsinline', '');
+      this.backgroundMusic.setAttribute('webkit-playsinline', '');
+    }
+    
+    if (this.enterSound) {
+      this.enterSound.preload = "none";
+      this.enterSound.muted = true;
+      this.enterSound.volume = 0.4;
+      this.enterSound.setAttribute('playsinline', '');
+      this.enterSound.setAttribute('webkit-playsinline', '');
+    }
+    
+    // Add touch event listeners to unlock audio
+    this.addTouchUnlockListeners();
+  }
+  
+  setupDesktopAudio() {
+    if (this.backgroundMusic) {
+      this.backgroundMusic.volume = 0.5;
+      this.backgroundMusic.muted = true;
+    }
+    
+    if (this.enterSound) {
+      this.enterSound.volume = 0.4;
+    }
+  }
+  
+  createAudioContext() {
+    try {
+      // Use webkit prefix for older mobile browsers
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      this.audioContext = new AudioContext();
+      
+      // Resume context if it's suspended (common on mobile)
+      if (this.audioContext.state === 'suspended') {
+        this.resumeAudioContext();
+      }
+    } catch (error) {
+      console.log('AudioContext not supported:', error);
+    }
+  }
+  
+  async resumeAudioContext() {
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      try {
+        await this.audioContext.resume();
+        console.log('AudioContext resumed');
+      } catch (error) {
+        console.log('Failed to resume AudioContext:', error);
+      }
+    }
+  }
+  
+  addTouchUnlockListeners() {
+    const unlockEvents = ['touchstart', 'touchend', 'click'];
+    
+    const unlockAudio = async () => {
+      if (this.audioUnlocked) return;
+      
+      // Resume audio context
+      await this.resumeAudioContext();
+      
+      // Try to play and immediately pause all audio elements
+      const audioElements = [this.backgroundMusic, this.enterSound].filter(Boolean);
+      
+      for (const audio of audioElements) {
+        try {
+          audio.muted = false;
+          const playPromise = audio.play();
+          if (playPromise) {
+            await playPromise;
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = true;
+          }
+        } catch (error) {
+          console.log('Audio unlock failed for element:', error);
+        }
+      }
+      
+      this.audioUnlocked = true;
+      console.log('Mobile audio unlocked');
+      
+      // Remove event listeners
+      unlockEvents.forEach(event => {
+        document.removeEventListener(event, unlockAudio);
+      });
+    };
+    
+    // Add listeners for all unlock events
+    unlockEvents.forEach(event => {
+      document.addEventListener(event, unlockAudio, { once: false, passive: true });
+    });
+  }
+  
+  setupMusicControl() {
+    if (!this.musicControl || !this.musicIcon) return;
+    
+    this.musicControl.addEventListener('click', () => this.toggleMusic());
+    this.updateMusicButton();
+  }
+  
+  updateMusicButton() {
+    if (!this.musicIcon || !this.musicControl) return;
+    
+    if (this.musicPlaying) {
+      this.musicIcon.className = "fas fa-volume-up";
+      this.musicControl.classList.add("playing");
+      this.musicControl.title = "Pause music";
+    } else {
+      this.musicIcon.className = "fas fa-volume-mute";
+      this.musicControl.classList.remove("playing");
+      this.musicControl.title = "Play music";
+    }
+  }
+  
+  async toggleMusic() {
+    if (!this.backgroundMusic) return;
+    
+    // Ensure audio is unlocked first
+    if (this.isMobile && !this.audioUnlocked) {
+      await this.resumeAudioContext();
+    }
+    
+    if (this.musicPlaying) {
+      this.stopMusic();
+    } else {
+      await this.playMusic();
+    }
+  }
+  
+  async playMusic() {
+    if (!this.backgroundMusic) return;
+    
+    try {
+      // Unmute and reset
+      this.backgroundMusic.muted = false;
+      this.backgroundMusic.currentTime = 0;
+      
+      // Play the music
+      const playPromise = this.backgroundMusic.play();
+      
+      if (playPromise !== undefined) {
+        await playPromise;
+        this.musicPlaying = true;
+        this.updateMusicButton();
+        
+        // Fade in volume
+        this.fadeVolume(0, 0.5, 500);
+        
+        console.log('Music started playing');
+      }
+    } catch (error) {
+      console.error('Failed to play music:', error);
+      this.showAudioError();
+    }
+  }
+  
+  stopMusic() {
+    if (!this.backgroundMusic) return;
+    
+    // Fade out and stop
+    this.fadeVolume(this.backgroundMusic.volume, 0, 300, () => {
+      this.backgroundMusic.pause();
+      this.backgroundMusic.currentTime = 0;
+      this.musicPlaying = false;
+      this.updateMusicButton();
+    });
+  }
+  
+  fadeVolume(startVol, endVol, duration, callback) {
+    if (!this.backgroundMusic) return;
+    
+    const startTime = performance.now();
+    const volumeDiff = endVol - startVol;
+    
+    const updateVolume = (timestamp) => {
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const currentVol = startVol + (volumeDiff * progress);
+      this.backgroundMusic.volume = Math.max(0, Math.min(1, currentVol));
+      
+      if (progress < 1) {
+        requestAnimationFrame(updateVolume);
+      } else if (callback) {
+        callback();
+      }
+    };
+    
+    requestAnimationFrame(updateVolume);
+  }
+  
+  async playEntranceSound() {
+    if (!this.enterSound) return;
+    
+    try {
+      // Ensure audio context is active
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        await this.resumeAudioContext();
+      }
+      
+      this.enterSound.muted = false;
+      this.enterSound.currentTime = 0;
+      
+      const playPromise = this.enterSound.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+        console.log('Entrance sound played');
+      }
+    } catch (error) {
+      console.log('Entrance sound failed:', error);
+    }
+  }
+  
+  showAudioError() {
+    if (this.musicControl) {
+      this.musicControl.title = "Audio blocked - tap to retry";
+      setTimeout(() => {
+        this.musicControl.title = this.musicPlaying ? "Pause music" : "Play music";
+      }, 3000);
+    }
+  }
+  
+  // Method to be called when enter button is clicked
+  async onEnterButtonClick() {
+    // Resume audio context if needed
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      await this.resumeAudioContext();
+    }
+    
+    // Play entrance sound
+    await this.playEntranceSound();
+    
+    // Start background music if not already playing
+    if (!this.musicPlaying) {
+      await this.playMusic();
+    }
+  }
+}
+
+// Initialize the audio manager
+let audioManager;
+
+// Updated enter button setup
+function setupEnterButton() {
+  const enterButton = document.getElementById("enterButton");
+  if (!enterButton) return;
+  
+  enterButton.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    
+    // Trigger audio manager
+    if (audioManager) {
+      await audioManager.onEnterButtonClick();
+    }
+    
+    // Rest of your existing enter button logic
+    const loadingScreen = document.getElementById("loadingScreen");
+    const statusContainer = document.getElementById("statusContainer");
+    const bgVideo = document.getElementById("bgVideo");
+    const customCursor = document.getElementById("customCursor");
+    
+    if (!loadingScreen || !statusContainer || !bgVideo || !customCursor) return;
+    
+    // Create particle explosion at button
+    const rect = enterButton.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    createEntranceParticles(centerX, centerY);
+    
+    // Cursor transformation
+    customCursor.classList.add("enter-pulse");
+    setTimeout(() => {
+      customCursor.classList.remove("enter-pulse");
+    }, 400);
+    
+    // Apply shatter effect to loading screen
+    loadingScreen.classList.add("shatter");
+    
+    // Pulse background video
+    bgVideo.classList.add("pulse");
+    
+    // Reveal status container
+    setTimeout(() => {
+      loadingScreen.style.display = "none";
+      statusContainer.classList.add("visible", "reveal");
+    }, 1000);
+  });
+}
+
+// Initialize when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize audio manager
+  audioManager = new MobileAudioManager();
+  
+  // Setup enter button with audio integration
+  setupEnterButton();
+  
+  // Your other initialization code...
+});
+
+// Additional mobile-specific fixes
+document.addEventListener('DOMContentLoaded', function() {
+  // Prevent zoom on double tap for iOS
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function (event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, false);
+  
+  // Add viewport meta tag if not present
+  if (!document.querySelector('meta[name="viewport"]')) {
+    const viewport = document.createElement('meta');
+    viewport.name = 'viewport';
+    viewport.content = 'width=device-width, initial-scale=1.0, user-scalable=no';
+    document.head.appendChild(viewport);
+  }
+});
       </script>
 
 
