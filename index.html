@@ -2849,13 +2849,19 @@ document.addEventListener("DOMContentLoaded", () => {
   animateTabTitle();
 
   // Attempt to play media
+// Fixed media function - only attempts to play, no extra UI
+function attemptMediaPlayback() {
+  // Attempt to play video
   if (bgVideo) {
-    bgVideo.play().catch((e) => console.log("Video autoplay prevented:", e));
+    bgVideo.play().catch((e) => {
+      console.log("Video autoplay prevented - user interaction required");
+    });
   }
 
+  // Attempt to play audio
   if (backgroundMusic) {
     backgroundMusic.play().catch((e) => {
-      console.log("Audio autoplay prevented:", e);
+      console.log("Audio autoplay prevented - user interaction required");
       if (musicControl) {
         musicControl.title = "Click to enable audio";
         setTimeout(() => {
@@ -2864,6 +2870,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+}
+
+// Replace your original code with:
+document.addEventListener('DOMContentLoaded', function() {
+  // ... your other DOM content loaded code ...
+  
+  // Try to play media
+  attemptMediaPlayback();
+});
 });
 
 
