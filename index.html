@@ -3,9 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xsythoo - Discord Profiles</title>
+    <title></title>
+    <link rel="icon" type="image/x-icon" href="sr.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        function animateTabTitle() {
+            const animations = [
+                "@",
+                "@S",
+                "@St",
+                "@Sta",
+                "@Stan",
+                "@StanR",
+                "@StanRu",
+                "@StanRui",
+                "@StanRuiz"
+            ];
+            let index = 0;
+            setInterval(() => {
+                document.title = animations[index];
+                index = (index + 1) % animations.length;
+            }, 400);
+        }
+
+        // Start animation immediately
+        animateTabTitle();
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -490,12 +514,18 @@
     </div>
 
     <script>
-        // Discord user IDs with custom href links
-        const users = [
-            { id: '454812651394957322', href: 'https://www.xsythoo.info/echo' },
-            { id: '968142413040336966', href: 'https://www.xsythoo.info/peho' },
-            { id: '800006055492845599', href: 'https://www.xsythoo.info/echo' }
-        ];
+// Discord user IDs with custom href links
+const users = [
+    { id: '454812651394957322', href: 'https://www.xsythoo.info/Saito' },
+    { id: '968142413040336966', href: 'https://www.xsythoo.info/peho' },
+    { id: '800006055492845599', href: 'https://www.xsythoo.info/echo' }
+];
+
+// Function to find a user by href, ignoring case
+function findUserByHref(href) {
+    const lowerCaseHref = href.toLowerCase();
+    return users.find(user => user.href.toLowerCase() === lowerCaseHref);
+}
 
         // Advanced Typing Animation System
         class AdvancedTypingAnimator {
