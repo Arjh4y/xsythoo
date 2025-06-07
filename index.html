@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xsythoo - Discord Profiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            position: relative;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('sr.png') center/cover no-repeat;
+            filter: blur(5px);
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8));
+            z-index: -1;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 6, 6, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .profile-ring {
+            background: conic-gradient(from 0deg, #ffffff, #666666, #333333, #000000, #333333, #666666, #ffffff);
+            padding: 2px;
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .profile-image {
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .profile-container:hover .profile-image {
+            transform: scale(1.15);
+        }
+        
+        /* Enhanced profile container centering */
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0.5rem;
+            height: 100%;
+            min-height: 100px;
+        }
+        
+        .profile-image-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .status-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid #000000;
+        }
+        
+        .status-online { background-color: #23a55a; }
+        .status-idle { background-color: #f0b132; }
+        .status-dnd { background-color: #f23f43; }
+        .status-offline { background-color: #80848e; }
+        
+        .profile-name {
+            text-align: center;
+            word-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
+            max-width: 100%;
+            line-height: 1.2;
+        }
+        
+        .main-logo {
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        
+        .floating-text {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .discord-link {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border-radius: 12px;
+            display: block;
+            height: 100%;
+        }
+        
+        .notification {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(40, 40, 40, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .profile-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+/* Loading overlay styles */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+.loading-spinner-large {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem auto; /* Center horizontally and add bottom margin */
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.loading-subtext {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* Advanced Typing Animation Styles */
+        .typing-container {
+            position: relative;
+            display: inline-block;
+            min-height: 1.5rem;
+        }
+
+        .typing-text {
+            display: inline;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid #ffffff;
+            animation: blink-cursor 1.2s step-end infinite;
+        }
+
+        @keyframes blink-cursor {
+            from, to { border-color: transparent; }
+            50% { border-color: #9ca3af; }
+        }
+
+        .typing-text.typing-active {
+            border-right-color: #ffffff;
+            animation: blink-cursor-active 0.8s step-end infinite;
+        }
+
+        @keyframes blink-cursor-active {
+            from, to { border-color: transparent; }
+            50% { border-color: #ffffff; }
+        }
+
+        .typing-text.completed {
+            border-right: none;
+            animation: none;
+        }
+
+        .typing-text.glitch {
+            animation: glitch 0.3s ease-in-out;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+            100% { transform: translate(0); }
+        }
+
+        .sound-wave {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sound-wave.active {
+            opacity: 1;
+        }
+
+        .wave-bar {
+            width: 2px;
+            height: 4px;
+            background: #9ca3af;
+            margin: 0 1px;
+            border-radius: 1px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+
+        @keyframes wave {
+            0%, 100% { height: 4px; }
+            50% { height: 12px; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .main-logo .w-32 { width: 9rem; height: 9rem; }
+            .text-6xl { font-size: 3rem; }
+            .mb-24 { margin-bottom: 4rem; }
+        }
+
+        @media (max-width: 768px) {
+            .main-logo .w-32 { width: 8rem; height:8rem; }
+            .text-6xl { font-size: 2.5rem; }
+            .mb-24 { margin-bottom: 3rem; }
+            .text-lg { font-size: 1rem; }
+            .mb-12 { margin-bottom: 2rem; }
+            .mt-12 { margin-top: 2rem; }
+        }
+
+        @media (max-width: 640px) {
+            .main-logo .w-32 { width: 7rem; height: 7rem; }
+            .text-6xl { font-size: 2rem; }
+            .mb-24 { margin-bottom: 2rem; }
+            .text-lg { font-size: 0.9rem; }
+            .mb-12 { margin-bottom: 1.5rem; }
+            .mt-12 { margin-top: 1.5rem; }
+            
+            /* Reduce profile sizes on mobile */
+            .profile-container .w-24 { width: 4.5rem; height: 4.5rem; }
+            .status-dot { width: 12px; height: 12px; }
+            .discord-link { padding: 4px; }
+        }
+
+        @media (max-width: 480px) {
+            .text-6xl { font-size: 1.75rem; }
+            .text-lg { font-size: 0.8rem; }
+            .profile-container .w-24 { width: 4rem; height: 4rem; }
+            .status-dot { width: 10px; height: 10px; }
+            .text-sm { font-size: 0.75rem; }
+        }
+
+        /* Ensure grid responsiveness - closer spacing */
+.responsive-grid {
+    display: grid;
+    gap: 0.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    max-width: 47rem;
+    width: 100%;
+    margin: 0 auto; /* Center the grid container */
+    place-content: center; /* Centers both horizontally and vertically */
+    box-sizing: border-box; /* Ensure padding/margins don't affect width */
+}
+
+.responsive-grid > * {
+    display: flex;
+    align-items: stretch;
+    justify-content: center; /* Center content within each grid item */
+}
+
+@media (max-width: 1024px) {
+    .responsive-grid {
+        grid-template-columns: repeat(5, 1fr); /* Fixed 5 columns */
+        gap: 0.5rem;
+        place-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .responsive-grid {
+        gap: 0.375rem;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        place-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .responsive-grid {
+        grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns */
+        gap: 0.375rem;
+        place-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .responsive-grid {
+        gap: 0.25rem;
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        max-width: 90vw;
+        place-content: center;
+    }
+}
+
+        /* Container responsive padding */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                padding: 1rem 0.75rem;
+            }
+        }
+
+        /* Responsive typing text */
+        @media (max-width: 640px) {
+            .typing-text {
+                font-size: 0.9rem;
+                word-break: break-word;
+                white-space: normal;
+                text-align: center;
+            }
+            
+            .typing-container {
+                max-width: 90vw;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .typing-text {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner-large"></div>
+            <div class="loading-text">Loading Data</div>
+            <div class="loading-subtext">Fetching user data...</div>
+        </div>
+    </div>
+
+    <div id="particles-js"></div>
+    
+    <div class="main-container">
+        <!-- Main Header -->
+        <div class="text-center mb-12">
+            <div class="main-logo mb-24 mt-40">
+                <div class="w-32 h-32 mx-auto relative">
+                    <img src="sr.png" 
+                         alt="Ruiz Logo" 
+                         class="w-full h-full rounded-full object-cover border-4 border-white shadow-2xl">
+                </div>
+            </div>
+            <h1 class="text-6xl font-bold text-white mb-4 floating-text">
+                <span class="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+                    
+                </span>
+            </h1>
+            <div class="typing-container">
+                <p class="text-white text-lg typing-text" id="typingText"></p>
+                <div class="sound-wave" id="soundWave">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Grid -->
+        <div class="responsive-grid" id="profileGrid">
+            <!-- Profiles will be loaded here dynamically -->
+        </div>
+        
+        <!-- Footer Info -->
+        <div class="mt-12 text-center">
+            <p class="text-gray-500 text-sm">Click on profiles to view information</p>
+        </div>
+    </div>
+
+    <script>
+        // Discord user IDs with custom href links
+        const users = [
+            { id: '454812651394957322', href: 'https://www.xsythoo.info/echo' },
+            { id: '968142413040336966', href: 'https://www.xsythoo.info/peho' },
+            { id: '800006055492845599', href: 'https://www.xsythoo.info/echo' }
+        ];
+
+        // Advanced Typing Animation System
+        class AdvancedTypingAnimator {
+            constructor(element, soundWaveElement) {
+                this.element = element;
+                this.soundWave = soundWaveElement;
+                this.originalText = "TANGINA MO KIFFY NI ISMAEL";
+                this.variations = [
+                    "TANGINA MO!!",
+                    "BOBO MO!!",
+                ];
+                this.currentVariation = 0;
+                this.isTyping = false;
+                this.typeSpeed = 120;
+                this.deleteSpeed = 80;
+                this.pauseTime = 3000;
+                this.glitchChance = 0.15;
+            }
+
+            async typeText(text) {
+                this.isTyping = true;
+                this.element.classList.add('typing-active');
+                this.soundWave.classList.add('active');
+                
+                for (let i = 0; i <= text.length; i++) {
+                    // Random glitch effect
+                    if (Math.random() < this.glitchChance && i > 0) {
+                        this.element.classList.add('glitch');
+                        await this.sleep(100);
+                        this.element.classList.remove('glitch');
+                    }
+                    
+                    this.element.textContent = text.substring(0, i);
+                    
+                    // Variable typing speed for more natural feel
+                    const speed = this.typeSpeed + (Math.random() * 80 - 40);
+                    await this.sleep(speed);
+                }
+                
+                this.element.classList.remove('typing-active');
+                this.soundWave.classList.remove('active');
+                this.isTyping = false;
+            }
+
+            async deleteText() {
+                this.isTyping = true;
+                this.element.classList.add('typing-active');
+                
+                const currentText = this.element.textContent;
+                
+                for (let i = currentText.length; i >= 0; i--) {
+                    this.element.textContent = currentText.substring(0, i);
+                    await this.sleep(this.deleteSpeed);
+                }
+                
+                this.element.classList.remove('typing-active');
+                this.isTyping = false;
+            }
+
+            async startAnimation() {
+                while (true) {
+                    const currentText = this.variations[this.currentVariation];
+                    
+                    // Type the text
+                    await this.typeText(currentText);
+                    
+                    // Pause
+                    await this.sleep(this.pauseTime);
+                    
+                    // Delete the text
+                    await this.deleteText();
+                    
+                    // Short pause before next variation
+                    await this.sleep(500);
+                    
+                    // Move to next variation
+                    this.currentVariation = (this.currentVariation + 1) % this.variations.length;
+                }
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            // Interactive features
+            addInteractivity() {
+                this.element.addEventListener('click', () => {
+                    if (!this.isTyping) {
+                        this.element.classList.add('glitch');
+                        setTimeout(() => {
+                            this.element.classList.remove('glitch');
+                        }, 300);
+                    }
+                });
+
+                // Hover effects
+                this.element.addEventListener('mouseenter', () => {
+                    if (!this.isTyping) {
+                        this.element.style.color = '#9ca3af';
+                        this.element.style.textShadow = '0 0 10px rgba(245, 158, 11, 0.5)';
+                    }
+                });
+
+                this.element.addEventListener('mouseleave', () => {
+                    if (!this.isTyping) {
+                        this.element.style.color = '';
+                        this.element.style.textShadow = '';
+                    }
+                });
+            }
+        }
+
+        // Function to create profile HTML
+        function createProfileHTML(user, userData = null) {
+            const status = userData?.discord_status || 'offline';
+            const avatarUrl = userData?.discord_user?.avatar 
+                ? `https://cdn.discordapp.com/avatars/${user.id}/${userData.discord_user.avatar}.${userData.discord_user.avatar.startsWith('a_') ? 'gif' : 'png'}?size=128`
+                : `https://cdn.discordapp.com/embed/avatars/${Math.floor(Math.random() * 5)}.png`;
+            
+            // Get the actual Discord username, fallback to display_name or global_name
+            const displayName = userData?.discord_user?.global_name || 
+                               userData?.discord_user?.display_name || 
+                               userData?.discord_user?.username || 
+                               `User ${user.id.slice(-4)}`;
+
+            return `
+                <a href="${user.href}" target="_blank" class="discord-link transition-all duration-300">
+                    <div class="profile-container group cursor-pointer">
+                        <div class="profile-image-wrapper">
+                            <div class="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-gray-600 to-gray-800 border border-gray-700">
+                                <img src="${avatarUrl}" 
+                                     alt="${displayName}" 
+                                     class="profile-image w-full h-full object-cover"
+                                     onerror="this.src='https://cdn.discordapp.com/embed/avatars/${Math.floor(Math.random() * 5)}.png'">
+                            </div>
+                            <div class="status-dot status-${status}"></div>
+                        </div>
+                        <p class="text-white text-sm profile-name transition-colors">${displayName}</p>
+                    </div>
+                </a>
+            `;
+        }
+
+        // Function to load user data from Lanyard API
+        async function loadUserData(user) {
+            try {
+                const response = await fetch(`https://api.lanyard.rest/v1/users/${user.id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.data;
+                }
+            } catch (error) {
+                console.log(`Failed to load data for user ${user.id}:`, error);
+            }
+            return null;
+        }
+
+        // Function to initialize profiles with bulk loading
+        async function initializeProfiles() {
+            const profileGrid = document.getElementById('profileGrid');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            try {
+                // Load all user data concurrently
+                const userDataPromises = users.map(user => loadUserData(user));
+                const allUserData = await Promise.all(userDataPromises);
+                
+                // Create HTML for all profiles at once
+                const profilesHTML = users.map((user, index) => 
+                    createProfileHTML(user, allUserData[index])
+                ).join('');
+                
+                // Set all profiles at once
+                profileGrid.innerHTML = profilesHTML;
+                
+                // Hide loading overlay with fade effect
+                loadingOverlay.classList.add('fade-out');
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error loading profiles:', error);
+                
+                // Show error state or fallback
+                profileGrid.innerHTML = users.map(user => 
+                    createProfileHTML(user, null)
+                ).join('');
+                
+                // Hide loading overlay
+                loadingOverlay.classList.add('fade-out');
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // Initialize particles with black/white theme
+        particlesJS("particles-js", {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 1000
+                    }
+                },
+                color: {
+                    value: ["#ffffff", "#cccccc", "#999999"]
+                },
+                shape: {
+                    type: "circle"
+                },
+                opacity: {
+                    value: 0.3,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 0.8,
+                        opacity_min: 0.1
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 1.5,
+                        size_min: 1
+                    }
+                },
+                move: {
+                    enable: true,
+                    speed: 0.8,
+                    direction: "bottom",
+                    random: true,
+                    straight: false,
+                    out_mode: "out"
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: "bubble"
+                    },
+                    onclick: {
+                        enable: false
+                    }
+                },
+                modes: {
+                    bubble: {
+                        distance: 200,
+                        size: 6,
+                        duration: 2,
+                        opacity: 0.6
+                    }
+                }
+            },
+            retina_detect: true
+        });
+        
+        // Add subtle floating animation to random profiles
+        setInterval(() => {
+            const profiles = document.querySelectorAll('.profile-container');
+            if (profiles.length > 0) {
+                const randomProfile = profiles[Math.floor(Math.random() * profiles.length)];
+                randomProfile.style.animation = 'float 2s ease-in-out';
+                
+                setTimeout(() => {
+                    randomProfile.style.animation = '';
+                }, 2000);
+            }
+        }, 6000);
+
+        // Initialize everything when page loads
+        window.addEventListener('load', () => {
+            // Initialize profiles with bulk loading
+            initializeProfiles();
+            
+            // Initialize advanced typing animation
+            const typingElement = document.getElementById('typingText');
+            const soundWaveElement = document.getElementById('soundWave');
+            const typingAnimator = new AdvancedTypingAnimator(typingElement, soundWaveElement);
+            
+            // Add interactivity
+            typingAnimator.addInteractivity();
+            
+            // Start the typing animation after profiles are loaded
+            setTimeout(() => {
+                typingAnimator.startAnimation();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
