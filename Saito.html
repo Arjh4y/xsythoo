@@ -3117,6 +3117,30 @@ avatarButton.addEventListener('keydown', (e) => {
       e.preventDefault();
     }
   });
+
+         // Load disable-devtool after other scripts to minimize interference
+        // Use custom configuration to allow network requests
+        const disableDevtoolScript = document.createElement('script');
+        disableDevtoolScript.src = 'https://cdn.jsdelivr.net/npm/disable-devtool@latest';
+        disableDevtoolScript.setAttribute('disable-devtool-auto', '');
+        disableDevtoolScript.onload = () => {
+            if (window.DisableDevtool) {
+                window.DisableDevtool({
+                    disableMenu: true, // Disable right-click menu
+                    disableSelect: false, // Allow text selection
+                    disableCopy: false, // Allow copying
+                    disableCut: false, // Allow cutting
+                    disablePaste: false, // Allow pasting
+                    clearLog: false, // Keep console logs
+                    detectors: ['f12', 'ctrlShiftI', 'ctrlShiftJ', 'ctrlShiftC', 'ctrlU'], // Specific shortcuts to block
+                    ondevtoolopen: () => {
+                        // Optional: Redirect or show message instead of closing tab
+                        console.warn('Developer tools detected.');
+                    }
+                });
+            }
+        };
+        document.body.appendChild(disableDevtoolScript);
     </script>
 
 
