@@ -331,6 +331,39 @@
             }
         }
 
+        /* Advanced Cursor Snowflake Trail */
+        .cursor-snowflake {
+            position: fixed;
+            pointer-events: none;
+            /* Ensures snowflakes don't interfere with any click events */
+            z-index: 1001;
+            animation: cursorSnowflakeFade 2s ease-out forwards;
+        }
+
+        /* Completely isolate snowflakes from status container */
+        .cursor-snowflake {
+            isolation: isolate;
+            /* Modern browsers - isolates the stacking context */
+            pointer-events: none !important;
+            /* Ensures snowflakes never capture mouse events */
+        }
+
+        /* Status container protection - ensure no interference */
+        .status-container {
+            /* These properties ensure the status container is not affected by the snowflakes */
+            position: relative !important;
+            /* Maintain original positioning context */
+            z-index: 1002 !important;
+            /* Higher than snowflakes */
+            pointer-events: auto !important;
+            /* Ensure clickability */
+            transform: none !important;
+            /* Prevent any transform inheritance */
+            animation: none !important;
+            /* Prevent any animation inheritance */
+        }
+
+
 
         /* Click Particle Effect */
         .click-particle {
@@ -630,6 +663,7 @@
         /* Username Style */
         .username {
             font-family: 'Old English Text MT', serif;
+
             font-size: 2.5em;
             font-weight: 600;
             letter-spacing: 1px;
@@ -978,7 +1012,6 @@
             /* Allow items to wrap to next line */
             overflow: hidden;
             /* Prevent any overflow */
-            
         }
 
         .footer-icon {
@@ -1712,129 +1745,6 @@
             pointer-events: auto;
         }
 
-
-
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .back-button:active {
-            transform: translateY(0);
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
-        }
-
-        .arrow {
-            width: 0;
-            height: 0;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-right: 12px solid rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
-        }
-
-        .back-button:hover .arrow {
-            border-right-color: white;
-            transform: translateX(-2px);
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .back-button {
-                top: 15px;
-                left: 15px;
-                width: 45px;
-                height: 45px;
-            }
-
-            .arrow {
-                border-top: 7px solid transparent;
-                border-bottom: 7px solid transparent;
-                border-right: 10px solid rgba(255, 255, 255, 0.9);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .back-button {
-                top: 12px;
-                left: 12px;
-                width: 40px;
-                height: 40px;
-            }
-
-            .arrow {
-                border-top: 6px solid transparent;
-                border-bottom: 6px solid transparent;
-                border-right: 9px solid rgba(255, 255, 255, 0.9);
-            }
-        }
-
-
-
-        .back-btn {
-            position: fixed;
-            top: 16px;
-            left: 16px;
-            width: 48px;
-            height: 48px;
-            background-color: rgba(255, 255, 255, 0.08);
-            /* subtle transparency */
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 9999;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .back-btn:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-            transform: scale(1.05);
-        }
-
-        .back-btn svg {
-            width: 24px;
-            height: 24px;
-            stroke: white;
-        }
-
-        @media (max-width: 480px) {
-            .back-btn {
-                width: 40px;
-                height: 40px;
-            }
-
-            .back-btn svg {
-                width: 20px;
-                height: 20px;
-            }
-        }
-
-
-
-
         #fluid {
             position: fixed;
             top: 0;
@@ -1849,10 +1759,6 @@
 
 <body>
     <canvas id="fluid"></canvas>
-    <button class="back-button" onclick="goBack()" aria-label="Go back">
-        <div class="arrow"></div>
-    </button>
-
     <source src="https://www.soundjay.com/buttons/sounds/button-30.mp3" type="audio/mpeg" />
     <audio id="entranceSound">
         <source src="entrance-whoosh.mp3" type="audio/mpeg" />
@@ -1861,7 +1767,7 @@
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">
-            <img src="RIO_1.png" alt="Ninja" />
+            <img src="giphy.gif" alt="Ninja" />
         </div>
         <div class="loading-text">
             <div class="typing-text" id="typingText"></div>
@@ -1894,7 +1800,6 @@
 
 
     <div class="status-container" id="statusContainer">
-
         <div class="status-header">
             <div class="avatar-container" role="button" tabindex="0"
                 aria-label="Copy Discord username xsythoo_ to clipboard" id="avatarButton"
@@ -1946,6 +1851,15 @@
             </div>
         </div>
 
+        <div class="activities-section">
+            <div class="activities-header">
+                Active Now
+                <div class="activity-indicator"></div>
+            </div>
+            <div id="activities-container">
+                <div class="empty-activities">Loading activities...</div>
+            </div>
+        </div>
 
         <div class="footer">
             <a href="https://www.youtube.com/@xsythoo" target="_blank">
@@ -1958,7 +1872,7 @@
                 </a>
         </div>
     </div>
-    <script src="./saito/animatedCursor.js"></script>
+
     <script>
         // Firebase Initialization (place this at the top of your script, before DOMContentLoaded)
         const firebaseConfig = {
@@ -3193,28 +3107,9 @@
             }
         };
         document.body.appendChild(disableDevtoolScript);
-
-
-
-        function goBack() {
-            // Check if there's a previous page in history
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                // Fallback - you can customize this behavior
-                window.location.href = 'index.html';
-            }
-        }
-
-        // Add keyboard accessibility
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') {
-                goBack();
-            }
-        });
     </script>
 
-
+    <script src="animatedCursor.js"></script>
 </body>
 
 </html>
