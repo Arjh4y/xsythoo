@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xsythoo_</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier Prime', monospace;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.2;
+            animation: matrix-fall linear infinite;
+        }
+        
+        @keyframes matrix-fall {
+            to { top: 100vh; }
+        }
+        
+        .main-container {
+            flex: 1;
+            max-width: 800px;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .links-panel {
+            flex: 1;
+            min-width: 400px;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #ffffff;
+            letter-spacing: 2px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+        
+        .control-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ffffff;
+            margin-bottom: 20px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .control-panel::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(45deg, #ffffff, transparent, #ffffff);
+            z-index: -1;
+            animation: border-glow 2s linear infinite;
+        }
+        
+        @keyframes border-glow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .panel-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #ffffff;
+            text-shadow: 0 0 5px #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-title::before {
+            content: '▶';
+            color: #ffffff;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            background: #000000;
+            border: 2px solid #ffffff;
+            color: #006115;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: #ffffff;
+            box-shadow: 0 0 10px #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            background: #000000;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            padding: 12px 24px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            background: #ffffff;
+            color: #000000;
+            box-shadow: 0 0 20px #ffffff;
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-primary {
+            border-color: #ffffff;
+        }
+        
+        .btn-secondary {
+            border-color: #888888;
+            color: #888888;
+        }
+        
+        .btn-secondary:hover {
+            background: #888888;
+            color: #000000;
+            box-shadow: 0 0 20px #888888;
+        }
+        
+        .btn-danger {
+            border-color: #888888;
+            color: #888888;
+        }
+        
+        .btn-danger:hover {
+            background: #888888;
+            color: #000000;
+            box-shadow: 0 0 20px #888888;
+        }
+        
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ffffff;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff;
+        }
+        
+        .stat-label {
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        
+        .links-container {
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #ffffff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            width: 100%;
+        }
+        
+        .links-container::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        .links-container::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        
+        .links-container::-webkit-scrollbar-thumb {
+            background: #ffffff;
+            border-radius: 5px;
+        }
+        
+        .invite-link {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #ffffff;
+            position: relative;
+            animation: slideIn 0.5s ease;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .invite-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+        
+        .bot-title {
+            flex: 1 0 100%;
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px #ffffff;
+        }
+        
+        .bot-link {
+            flex: 1;
+            color: #ffffff;
+            text-decoration: none;
+            word-break: break-all;
+            display: block;
+            margin-bottom: 0;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+        
+        .bot-link:hover {
+            color: #ffffff;
+            text-shadow: 0 0 5px #ffffff;
+        }
+        
+        .error {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .error-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background: #000000;
+            border: 1px solid #ffffff;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffffff, #888888);
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progress-shine 2s linear infinite;
+        }
+        
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-size: 12px;
+            text-shadow: 0 0 5px #000000;
+            z-index: 1;
+        }
+        
+        @media (max-width: 1200px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .main-container, .links-panel {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .invite-link {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .bot-link {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #000000;
+            padding: 15px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg" id="matrix-bg"></div>
+    
+    <div class="main-container">
+        <div class="header">
+            <h1>xsythoo_</h1>
+            <div class="subtitle">_________________________________</div>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div class="stat-value" id="total-bots">0</div>
+                <div class="stat-label">Total Bots</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="valid-tokens">0</div>
+                <div class="stat-label">Valid Tokens</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="generated-links">0</div>
+                <div class="stat-label">Generated Links</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="error-count">0</div>
+                <div class="stat-label">Errors</div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="panel-title">Bot Configuration</div>
+            <div class="form-group">
+                <label for="permissions">Bot Permissions (Integer)</label>
+                <input type="text" id="permissions" value="294205385782" placeholder="Enter permission integer">
+            </div>
+            <div class="form-group">
+                <label for="permission-preset">Permission Presets</label>
+                <select id="permission-preset">
+                    <option value="">Select a preset...</option>
+                    <option value="8">Administrator</option>
+                    <option value="2147483647">All Permissions</option>
+                    <option value="3072">Basic (Read Messages + Send Messages)</option>
+                    <option value="137439021120">Moderation Bot</option>
+                    <option value="294205385782">Music Bot</option>
+                    <option value="379968">Verification Bot</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="panel-title">Token Management</div>
+            <div class="form-group">
+                <label for="token-input">Additional Bot Tokens (One per line)</label>
+                <textarea id="token-input" placeholder="Paste your bot tokens here...&#10;One token per line"></textarea>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-secondary" id="validate-tokens-btn">Validate Tokens</button>
+                <button class="btn btn-danger" id="clear-tokens-btn">Clear All Tokens</button>
+                <button class="btn btn-primary" id="save-tokens-btn">Save Tokens</button>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="panel-title">Deployment Actions</div>
+            <div class="progress-container hidden" id="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+            <button class="btn btn-primary" id="generate-btn">
+                <span class="loading hidden" id="loading-spinner"></span>
+                Generate Invite Links
+            </button>
+            <button class="btn btn-secondary" id="open-all-btn">Open All Links</button>
+            <button class="btn btn-secondary" id="copy-all-btn">Copy All Links</button>
+            <button class="btn btn-danger" id="clear-links-btn">Clear Results</button>
+        </div>
+    </div>
+    
+    <div class="links-panel">
+        <div class="control-panel" style="margin: 0;">
+            <div class="panel-title">Generated Invite Links</div>
+            <div class="links-container" id="links-container">
+                <div style="text-align: center; color: #888; padding: 20px;">
+                    Click "Generate Invite Links" to begin deployment...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createMatrixRain() {
+            const matrixBg = document.getElementById('matrix-bg');
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
+            
+            for (let i = 0; i < 50; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                column.style.animationDelay = Math.random() * 2 + 's';
+                
+                let text = '';
+                for (let j = 0; j < 20; j++) {
+                    text += chars.charAt(Math.floor(Math.random() * chars.length)) + '<br>';
+                }
+                column.innerHTML = text;
+                
+                matrixBg.appendChild(column);
+            }
+        }
+        
+        createMatrixRain();
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(255, 255, 255, 0.9)';
+                notification.style.color = '#000000';
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        function base64Decode(str) {
+            str = str.replace(/-/g, '+').replace(/_/g, '/');
+            while (str.length % 4) {
+                str += '=';
+            }
+            try {
+                return decodeURIComponent(atob(str).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        function getClientIdFromToken(token) {
+            try {
+                const parts = token.split('.');
+                if (parts.length < 3) return null;
+                
+                const decoded = base64Decode(parts[0]);
+                if (!decoded) return null;
+                
+                const clientId = decoded.match(/\d+/)?.[0];
+                if (!clientId || clientId.length < 15) return null;
+                
+                return clientId;
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        function validateToken(token) {
+            if (!token || token.length < 50) return false;
+            return getClientIdFromToken(token) !== null;
+        }
+        
+        function updateStats(totalBots, validTokens, generatedLinks, errorCount) {
+            document.getElementById('total-bots').textContent = totalBots;
+            document.getElementById('valid-tokens').textContent = validTokens;
+            document.getElementById('generated-links').textContent = generatedLinks;
+            document.getElementById('error-count').textContent = errorCount;
+        }
+        
+        function showProgress(current, total) {
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            progressContainer.classList.remove('hidden');
+            
+            const percentage = Math.round((current / total) * 100);
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `${percentage}% (${current}/${total})`;
+            
+            if (current === total) {
+                setTimeout(() => {
+                    progressContainer.classList.add('hidden');
+                }, 2000);
+            }
+        }
+        
+        function hideProgress() {
+            document.getElementById('progress-container').classList.add('hidden');
+        }
+        
+        let inviteLinks = [];
+        let isGenerating = false;
+        let savedTokens = [];
+        
+        function loadSavedTokens() {
+            const saved = localStorage.getItem('savedBotTokens');
+            if (saved) {
+                savedTokens = JSON.parse(saved);
+                document.getElementById('token-input').value = savedTokens.join('\n');
+                updateStats(savedTokens.length, savedTokens.length, 0, 0);
+                showNotification('Loaded saved tokens from storage');
+            }
+        }
+        
+        function saveTokens() {
+            const tokens = document.getElementById('token-input').value
+                .split('\n')
+                .filter(t => t.trim())
+                .map(t => t.trim());
+            
+            if (tokens.length === 0) {
+                showNotification('No tokens to save!', 'error');
+                return;
+            }
+            
+            savedTokens = tokens;
+            localStorage.setItem('savedBotTokens', JSON.stringify(savedTokens));
+            showNotification(`${tokens.length} tokens saved to storage`);
+        }
+        
+        async function generateInvites() {
+            if (isGenerating) return;
+            
+            isGenerating = true;
+            const generateBtn = document.getElementById('generate-btn');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            
+            generateBtn.disabled = true;
+            loadingSpinner.classList.remove('hidden');
+            
+            const permissions = document.getElementById('permissions').value;
+            const additionalTokens = document.getElementById('token-input').value
+                .split('\n')
+                .filter(t => t.trim())
+                .map(t => t.trim());
+            
+            const allTokens = [...savedTokens, ...additionalTokens];
+            const linksContainer = document.getElementById('links-container');
+            
+            linksContainer.innerHTML = '';
+            inviteLinks = [];
+            
+            let validTokens = 0;
+            let generatedLinks = 0;
+            let errorCount = 0;
+            
+            for (let i = 0; i < allTokens.length; i++) {
+                const token = allTokens[i];
+                
+                try {
+                    if (!token) continue;
+                    
+                    const clientId = getClientIdFromToken(token);
+                    if (!clientId) {
+                        throw new Error("Invalid token format - could not extract client ID");
+                    }
+                    
+                    validTokens++;
+                    
+                    const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=${permissions}&scope=bot`;
+                    inviteLinks.push(inviteLink);
+                    generatedLinks++;
+                    
+                    const linkElement = document.createElement("div");
+                    linkElement.className = "invite-link";
+                    linkElement.innerHTML = `
+                        <div class="bot-title">Bot #${i + 1} - Client ID: ${clientId}</div>
+                        <a href="${inviteLink}" target="_blank" class="bot-link">${inviteLink}</a>
+                        <button class="btn btn-secondary" onclick="copyToClipboard('${inviteLink}')">Copy Link</button>
+                        <button class="btn btn-primary" onclick="window.open('${inviteLink}', '_blank')">Open Link</button>
+                    `;
+                    
+                    linksContainer.appendChild(linkElement);
+                    
+                } catch (error) {
+                    errorCount++;
+                    const errorElement = document.createElement("div");
+                    errorElement.className = "error";
+                    errorElement.innerHTML = `
+                        <div class="error-title">Bot #${i + 1} - Error</div>
+                        <div>${error.message}</div>
+                        <div>Token: ${token.substring(0, 10)}...</div>
+                    `;
+                    linksContainer.appendChild(errorElement);
+                }
+                
+                showProgress(i + 1, allTokens.length);
+                updateStats(allTokens.length, validTokens, generatedLinks, errorCount);
+                
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            
+            isGenerating = false;
+            generateBtn.disabled = false;
+            loadingSpinner.classList.add('hidden');
+            
+            showNotification(`Generated ${generatedLinks} invite links successfully!`);
+            
+            localStorage.setItem('generatedInviteLinks', JSON.stringify(inviteLinks));
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Link copied to clipboard!');
+            });
+        }
+        
+        function copyAllLinks() {
+            if (inviteLinks.length === 0) {
+                showNotification('No links to copy!', 'error');
+                return;
+            }
+            
+            const allLinks = inviteLinks.join('\n');
+            navigator.clipboard.writeText(allLinks).then(() => {
+                showNotification(`${inviteLinks.length} links copied to clipboard!`);
+            });
+        }
+        
+        function openAllLinks() {
+            if (inviteLinks.length === 0) {
+                showNotification('No links to open!', 'error');
+                return;
+            }
+            
+            if (inviteLinks.length > 10) {
+                if (!confirm(`This will open ${inviteLinks.length} tabs. Continue?`)) {
+                    return;
+                }
+            }
+            
+            inviteLinks.forEach((link, index) => {
+                setTimeout(() => {
+                    window.open(link, '_blank');
+                }, index * 100);
+            });
+            
+            showNotification(`Opening ${inviteLinks.length} invite links...`);
+        }
+        
+        function clearLinks() {
+            document.getElementById('links-container').innerHTML = `
+                <div style="text-align: center; color: #888; padding: 20px;">
+                    Click "Generate Invite Links" to begin deployment...
+                </div>
+            `;
+            inviteLinks = [];
+            localStorage.removeItem('generatedInviteLinks');
+            updateStats(0, 0, 0, 0);
+            showNotification('All links cleared!');
+        }
+        
+        function clearTokens() {
+            document.getElementById('token-input').value = '';
+            savedTokens = [];
+            localStorage.removeItem('savedBotTokens');
+            updateStats(0, 0, 0, 0);
+            showNotification('All tokens cleared!');
+        }
+        
+        function validateTokens() {
+            const tokens = document.getElementById('token-input').value
+                .split('\n')
+                .filter(t => t.trim())
+                .map(t => t.trim());
+            
+            if (tokens.length === 0) {
+                showNotification('No tokens to validate!', 'error');
+                return;
+            }
+            
+            let validCount = 0;
+            let invalidTokens = [];
+            
+            tokens.forEach((token, index) => {
+                if (validateToken(token)) {
+                    validCount++;
+                } else {
+                    invalidTokens.push(index + 1);
+                }
+            });
+            
+            if (invalidTokens.length > 0) {
+                showNotification(`${validCount}/${tokens.length} tokens valid. Invalid tokens at lines: ${invalidTokens.join(', ')}`, 'error');
+            } else {
+                showNotification(`All ${validCount} tokens are valid!`);
+            }
+        }
+        
+        function handlePresetChange() {
+            const preset = document.getElementById('permission-preset').value;
+            if (preset) {
+                document.getElementById('permissions').value = preset;
+                showNotification('Permission preset applied!');
+            }
+        }
+        
+        document.getElementById('generate-btn').addEventListener('click', generateInvites);
+        document.getElementById('open-all-btn').addEventListener('click', openAllLinks);
+        document.getElementById('copy-all-btn').addEventListener('click', copyAllLinks);
+        document.getElementById('clear-links-btn').addEventListener('click', clearLinks);
+        document.getElementById('clear-tokens-btn').addEventListener('click', clearTokens);
+        document.getElementById('validate-tokens-btn').addEventListener('click', validateTokens);
+        document.getElementById('save-tokens-btn').addEventListener('click', saveTokens);
+        document.getElementById('permission-preset').addEventListener('change', handlePresetChange);
+        
+        function initApp() {
+            loadSavedTokens();
+            
+            const savedLinks = localStorage.getItem('generatedInviteLinks');
+            if (savedLinks) {
+                inviteLinks = JSON.parse(savedLinks);
+                updateStats(savedTokens.length, savedTokens.length, inviteLinks.length, 0);
+                
+                const linksContainer = document.getElementById('links-container');
+                linksContainer.innerHTML = '';
+                
+                inviteLinks.forEach((link, index) => {
+                    const clientId = link.match(/client_id=(\d+)/)?.[1] || 'unknown';
+                    const linkElement = document.createElement("div");
+                    linkElement.className = "invite-link";
+                    linkElement.innerHTML = `
+                        <div class="bot-title">Bot #${index + 1} - Client ID: ${clientId}</div>
+                        <a href="${link}" target="_blank" class="bot-link">${link}</a>
+                        <button class="btn btn-secondary" onclick="copyToClipboard('${link}')">Copy Link</button>
+                        <button class="btn btn-primary" onclick="window.open('${link}', '_blank')">Open Link</button>
+                    `;
+                    linksContainer.appendChild(linkElement);
+                });
+                
+                showNotification('Loaded previously generated links');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', initApp);
+        
+        document.getElementById('permissions').focus();
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'Enter':
+                        e.preventDefault();
+                        generateInvites();
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        openAllLinks();
+                        break;
+                    case 'c':
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            copyAllLinks();
+                        }
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        saveTokens();
+                        break;
+                }
+            }
+        });
+        
+        function addTooltip(element, text) {
+            element.title = text;
+        }
+        
+        addTooltip(document.getElementById('generate-btn'), 'Ctrl+Enter: Generate invite links');
+        addTooltip(document.getElementById('open-all-btn'), 'Ctrl+O: Open all links in new tabs');
+        addTooltip(document.getElementById('copy-all-btn'), 'Ctrl+Shift+C: Copy all links to clipboard');
+        addTooltip(document.getElementById('save-tokens-btn'), 'Ctrl+S: Save tokens to browser storage');
+        addTooltip(document.getElementById('validate-tokens-btn'), 'Validate token format before generating');
+        
+        setTimeout(() => {
+            showNotification('KINGINA MO TANGA');
+        }, 1000);
+    </script>
+</body>
+</html>
