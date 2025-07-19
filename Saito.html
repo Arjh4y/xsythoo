@@ -1630,6 +1630,31 @@
             handleMobileBackground();
             // Your other initialization code...
         });
+
+        function initBackgroundVideo() {
+          const bgVideo = document.getElementById('bgVideo');
+          const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        
+          if (isMobile) {
+            // Replace video with static image
+            const poster = document.createElement('div');
+            poster.style.backgroundImage = 'url(mobile-poster.jpg)';
+            poster.style.position = 'fixed';
+            poster.style.top = '0';
+            poster.style.left = '0';
+            poster.style.width = '100%';
+            poster.style.height = '100%';
+            poster.style.zIndex = '-1';
+            poster.style.opacity = '0.3';
+            poster.style.backgroundSize = 'cover';
+            document.body.appendChild(poster);
+            bgVideo.remove();
+          } else {
+            // Desktop behavior
+            bgVideo.style.display = 'block';
+            bgVideo.play().catch(e => console.log('Play failed:', e));
+          }
+        }
     </script>
 </body>
 
