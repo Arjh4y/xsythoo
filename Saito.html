@@ -981,12 +981,13 @@
             }
         }
 
-/* Mobile-specific video styling */
-@media (hover: none) and (pointer: coarse) {
-  .video-background {
-    display: block !important; /* Force show on mobile */
-  }
-}
+        /* Mobile-specific video styling */
+        @media (hover: none) and (pointer: coarse) {
+            .video-background {
+                display: block !important;
+                /* Force show on mobile */
+            }
+        }
     </style>
 </head>
 
@@ -1626,85 +1627,6 @@
             // Your other initialization code...
         });
 
-function initBackgroundVideo() {
-  const bgVideo = document.getElementById('bgVideo');
-  
-  // Modern mobile detection
-  const isMobile = ('ontouchstart' in window) || 
-                  (navigator.maxTouchPoints > 0) || 
-                  (navigator.msMaxTouchPoints > 0);
-
-  // Ensure video is properly configured for mobile
-  bgVideo.muted = true;
-  bgVideo.playsInline = true;
-  bgVideo.setAttribute('playsinline', '');
-  bgVideo.setAttribute('webkit-playsinline', '');
-  bgVideo.style.display = 'block';
-
-  // Different approach for mobile vs desktop
-  if (isMobile) {
-    // Mobile - requires user interaction
-    const playVideo = () => {
-      bgVideo.play().then(() => {
-        console.log('Video playing on mobile');
-      }).catch(e => {
-        console.log('Mobile play failed, trying fallback:', e);
-        // Fallback: Show poster image if video fails
-        showPosterFallback();
-      });
-    };
-
-    // Wait for any user interaction
-    document.addEventListener('touchstart', playVideo, { once: true });
-    document.addEventListener('click', playVideo, { once: true });
-  } else {
-    // Desktop - try to play immediately
-    bgVideo.play().catch(e => {
-      console.log('Desktop play failed:', e);
-    });
-  }
-}
-
-function showPosterFallback() {
-  const bgVideo = document.getElementById('bgVideo');
-  if (bgVideo) {
-    // Create container for background elements
-    const bgContainer = document.createElement('div');
-    bgContainer.style.position = 'fixed';
-    bgContainer.style.top = '0';
-    bgContainer.style.left = '0';
-    bgContainer.style.width = '100%';
-    bgContainer.style.height = '100%';
-    bgContainer.style.zIndex = '-1';
-    
-    // Add gradient background
-    bgContainer.style.background = 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)';
-    
-    // Add poster image (if available)
-    const poster = document.createElement('div');
-    poster.style.position = 'absolute';
-    poster.style.top = '0';
-    poster.style.left = '0';
-    poster.style.width = '100%';
-    poster.style.height = '100%';
-    poster.style.backgroundImage = 'url(mobile-poster.jpg)';
-    poster.style.opacity = '0.3';
-    poster.style.backgroundSize = 'cover';
-    poster.style.backgroundPosition = 'center';
-    poster.style.mixBlendMode = 'overlay'; // Blend with gradient
-    
-    bgContainer.appendChild(poster);
-    document.body.appendChild(bgContainer);
-    
-    // Remove video element
-    bgVideo.remove();
-    
-    console.log('Using fallback gradient + poster background');
-  }
-}
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initBackgroundVideo);
     </script>
 </body>
 
