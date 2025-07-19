@@ -1668,19 +1668,38 @@ function initBackgroundVideo() {
 function showPosterFallback() {
   const bgVideo = document.getElementById('bgVideo');
   if (bgVideo) {
+    // Create container for background elements
+    const bgContainer = document.createElement('div');
+    bgContainer.style.position = 'fixed';
+    bgContainer.style.top = '0';
+    bgContainer.style.left = '0';
+    bgContainer.style.width = '100%';
+    bgContainer.style.height = '100%';
+    bgContainer.style.zIndex = '-1';
+    
+    // Add gradient background
+    bgContainer.style.background = 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)';
+    
+    // Add poster image (if available)
     const poster = document.createElement('div');
-    poster.style.backgroundImage = 'url(mobile-poster.jpg)';
-    poster.style.position = 'fixed';
+    poster.style.position = 'absolute';
     poster.style.top = '0';
     poster.style.left = '0';
     poster.style.width = '100%';
     poster.style.height = '100%';
-    poster.style.zIndex = '-1';
+    poster.style.backgroundImage = 'url(mobile-poster.jpg)';
     poster.style.opacity = '0.3';
     poster.style.backgroundSize = 'cover';
     poster.style.backgroundPosition = 'center';
-    document.body.appendChild(poster);
+    poster.style.mixBlendMode = 'overlay'; // Blend with gradient
+    
+    bgContainer.appendChild(poster);
+    document.body.appendChild(bgContainer);
+    
+    // Remove video element
     bgVideo.remove();
+    
+    console.log('Using fallback gradient + poster background');
   }
 }
 
