@@ -1246,15 +1246,7 @@ body {
         function updatePresence() {
             if (!presenceData) return;
 
-            // Update avatar decoration if available
-            const avatarDecoration = document.getElementById('avatarDecoration');
-            if (presenceData.discord_user && presenceData.discord_user.avatar_decoration_data) {
-                const decorationUrl = `https://cdn.discordapp.com/avatar-decoration-presets/${presenceData.discord_user.avatar_decoration_data.asset}.png`;
-                avatarDecoration.style.backgroundImage = `url('${decorationUrl}')`;
-                avatarDecoration.style.display = 'block';
-            } else {
-                avatarDecoration.style.display = 'none';
-            }
+
 
             // Update status indicator
             const statusIndicator = document.getElementById('statusIndicator');
