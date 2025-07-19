@@ -59,16 +59,29 @@
             /* Disable touch actions */
         }
 
-        body {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-            width: 100dvw;
-            height: 100dvh;
-            overflow: hidden;
-            font-family: 'Inter', sans-serif;
-            color: #ffffff;
-            cursor: none;
-            position: relative;
-        }
+/* Replace your existing background styles with this */
+body {
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%) !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  min-height: 100vh !important;
+}
+
+/* Mobile-specific darkening fix */
+@media (hover: none) and (pointer: coarse) {
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -2;
+    pointer-events: none;
+  }
+}
 
         /* Animated background pattern */
         body::before {
