@@ -1420,7 +1420,7 @@
       if (presenceData.discord_user) {
         let avatarUrl;
         if (presenceData.discord_user.avatar) {
-          avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${presenceData.discord_user.avatar}.webp?size=256`;
+         
         } else {
           // Use default avatar based on discriminator
           const discriminator = presenceData.discord_user.discriminator;
@@ -1428,16 +1428,6 @@
           avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNum}.png`;
         }
 
-        // Only update if the source has changed
-        if (avatarImg.src !== avatarUrl) {
-          avatarImg.src = avatarUrl;
-          avatarImg.onerror = () => {
-            avatarImg.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
-          };
-
-          // Update favicons
-          updateFavicons(avatarUrl);
-        }
       }
       // Update status indicator
       const statusIndicator = document.getElementById('statusIndicator');
@@ -1512,29 +1502,93 @@
         });
     }
 
-    function updateAvatarFromData(data) {
-      const avatarImg = document.getElementById('avatar');
-      let avatarUrl;
 
-      if (data.discord_user) {
-        if (data.discord_user.avatar) {
-          avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${data.discord_user.avatar}.webp?size=256`;
-        } else {
-          // Use default avatar based on discriminator
-          const discriminator = data.discord_user.discriminator;
-          const defaultAvatarNum = discriminator % 5;
-          avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNum}.png`;
-        }
 
-        avatarImg.src = avatarUrl;
-        avatarImg.onerror = () => {
-          avatarImg.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
-        };
 
-        // Update favicons
-        updateFavicons(avatarUrl);
-      }
+
+
+
+function updateAvatarFromData(data) {
+  const avatarImg = document.getElementById('avatar');
+  
+  if (!data.discord_user) {
+    console.log('No discord_user data found');
+    return;
+  }
+
+  if (data.discord_user.avatar) {
+    // Get the user ID - it might be in different places
+    const userId = data.discord_user.id || data.user_id || data.id;
+    
+    if (!userId) {
+      console.error('User ID not found in data:', data);
+      return;
     }
+
+    console.log('Avatar hash:', data.discord_user.avatar);
+    console.log('User ID:', userId);
+    
+    // Check if avatar hash starts with 'a_' (indicates animated GIF)
+    const isAnimated = data.discord_user.avatar.startsWith('a_');
+    console.log('Is animated:', isAnimated);
+    
+    // Create format priority list
+    const formats = isAnimated ? ['gif', 'webp', 'png', 'jpg'] : ['webp', 'png', 'jpg'];
+    let formatIndex = 0;
+    
+    const tryNextFormat = () => {
+      if (formatIndex < formats.length) {
+        const format = formats[formatIndex];
+        const url = `https://cdn.discordapp.com/avatars/${userId}/${data.discord_user.avatar}.${format}?size=256`;
+        
+        console.log(`Trying format ${format}:`, url);
+        
+        avatarImg.onload = () => {
+          console.log(`Successfully loaded ${format} format`);
+          avatarImg.onerror = null; // Clear error handler
+        };
+        
+        avatarImg.onerror = () => {
+          console.log(`Failed to load ${format} format`);
+          formatIndex++;
+          tryNextFormat();
+        };
+        
+        avatarImg.src = url;
+      } else {
+        console.log('All formats failed, using default avatar');
+        // All formats failed, use default avatar
+        const discriminator = data.discord_user.discriminator || '0000';
+        const defaultAvatarNum = parseInt(discriminator) % 5;
+        avatarImg.src = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNum}.png`;
+        avatarImg.onerror = null;
+      }
+    };
+    
+    // Start trying formats
+    tryNextFormat();
+    
+    // Update favicons with PNG version for compatibility
+    const faviconUrl = `https://cdn.discordapp.com/avatars/${userId}/${data.discord_user.avatar}.png?size=256`;
+    updateFavicons(faviconUrl);
+    
+  } else {
+    console.log('No custom avatar, using default');
+    // Use default avatar based on discriminator
+    const discriminator = data.discord_user.discriminator || '0000';
+    const defaultAvatarNum = parseInt(discriminator) % 5;
+    avatarImg.src = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNum}.png`;
+    avatarImg.onerror = null;
+  }
+}
+
+
+
+
+
+
+
+
 
     // Call this when initializing the page
     document.addEventListener('DOMContentLoaded', function () {
