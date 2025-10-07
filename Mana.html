@@ -22,8 +22,8 @@
       const prefix = "‎ ";
       const text = "@Mana";
       const typingSpeed = 300;
-      const pauseAtFull = 2000; 
-      const pauseAtEmpty = 1000; 
+      const pauseAtFull = 2000;
+      const pauseAtEmpty = 1000;
 
       let visibleChars = 0;
       let isTyping = true;
@@ -1394,7 +1394,7 @@
         if (presenceData.spotify.album_art_url) {
           albumArt.src = presenceData.spotify.album_art_url;
           albumArt.onerror = () => {
-            albumArt.src = ''; 
+            albumArt.src = '';
           };
           albumArt.classList.remove('loading');
         }
@@ -1665,13 +1665,13 @@
     disableDevtoolScript.onload = () => {
       if (window.DisableDevtool) {
         window.DisableDevtool({
-          disableMenu: true, 
-          disableSelect: false, 
-          disableCopy: false, 
-          disableCut: false, 
-          disablePaste: false, 
-          clearLog: false, 
-          detectors: ['f12', 'ctrlShiftI', 'ctrlShiftJ', 'ctrlShiftC', 'ctrlU'], 
+          disableMenu: true,
+          disableSelect: false,
+          disableCopy: false,
+          disableCut: false,
+          disablePaste: false,
+          clearLog: false,
+          detectors: ['f12', 'ctrlShiftI', 'ctrlShiftJ', 'ctrlShiftC', 'ctrlU'],
           ondevtoolopen: () => {
             console.warn('Developer tools detected.');
           }
@@ -1726,8 +1726,8 @@
       if (isMobileDevice()) {
         const bgVideo = document.getElementById('bgVideo');
         if (bgVideo) {
-          bgVideo.style.display = 'none'; 
-          bgVideo.pause(); 
+          bgVideo.style.display = 'none';
+          bgVideo.pause();
 
           document.body.style.background = "linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)";
         }
@@ -1758,13 +1758,13 @@
       const typingEffect = setInterval(() => {
         if (i < originalText.length) {
           title.textContent += originalText.charAt(i);
-          title.className = 'typing'; 
+          title.className = 'typing';
           i++;
         } else {
           clearInterval(typingEffect);
-          title.className = ''; 
+          title.className = '';
         }
-      }, 150); 
+      }, 150);
     });
 
   </script>
